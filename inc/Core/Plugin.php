@@ -680,6 +680,138 @@ class Plugin {
             wp_send_json_error('Setup failed: ' . $e->getMessage());
         }
     }
+    
+    /**
+     * Get schema markup enabled posts count
+     * 
+     * @return int
+     */
+    public function get_schema_enabled_posts_count() {
+        global $wpdb;
+        
+        $post_types = get_option('kseo_post_types', array('post', 'page'));
+        if (!is_array($post_types)) {
+            $post_types = array('post', 'page');
+        }
+        
+        $post_types_placeholders = implode(',', array_fill(0, count($post_types), '%s'));
+        
+        $query = $wpdb->prepare(
+            "SELECT COUNT(DISTINCT p.ID) 
+            FROM {$wpdb->posts} p 
+            INNER JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id 
+            WHERE p.post_type IN ($post_types_placeholders) 
+            AND p.post_status = 'publish' 
+            AND pm.meta_key = '_kseo_schema_enabled' 
+            AND pm.meta_value = '1'",
+            ...$post_types
+        );
+        
+        return (int) $wpdb->get_var($query);
+    }
+    
+    /**
+     * Get social tags enabled posts count
+     * 
+     * @return int
+     */
+    public function get_social_tags_enabled_posts_count() {
+        global $wpdb;
+        
+        $post_types = get_option('kseo_post_types', array('post', 'page'));
+        if (!is_array($post_types)) {
+            $post_types = array('post', 'page');
+        }
+        
+        $post_types_placeholders = implode(',', array_fill(0, count($post_types), '%s'));
+        
+        $query = $wpdb->prepare(
+            "SELECT COUNT(DISTINCT p.ID) 
+            FROM {$wpdb->posts} p 
+            INNER JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id 
+            WHERE p.post_type IN ($post_types_placeholders) 
+            AND p.post_status = 'publish' 
+            AND pm.meta_key = '_kseo_social_enabled' 
+            AND pm.meta_value = '1'",
+            ...$post_types
+        );
+        
+        return (int) $wpdb->get_var($query);
+    }
+    
+    /**
+     * Get total posts count for configured post types
+     * 
+     * @return int
+     */
+    public function get_total_posts_count() {
+        global $wpdb;
+        
+        $post_types = get_option('kseo_post_types', array('post', 'page'));
+        if (!is_array($post_types)) {
+            $post_types = array('post', 'page');
+        }
+        
+        $post_types_placeholders = implode(',', array_fill(0, count($post_types), '%s'));
+        
+        $query = $wpdb->prepare(
+            "SELECT COUNT(*) 
+            FROM {$wpdb->posts} 
+            WHERE post_type IN ($post_types_placeholders) 
+            AND post_status = 'publish'",
+            ...$post_types
+        );
+        
+        return (int) $wpdb->get_var($query);
+    }
+    
+    /**
+     * Get plugin health status
+     * 
+     * @return array
+     */
+    public function get_plugin_health_status() {
+        $status = array(
+            'modules_loaded' => 0,
+            'modules_total' => 0,
+            'database_tables' => array(),
+            'api_connections' => array()
+        );
+        
+        try {
+            // Count loaded modules
+            if (method_exists($this->service_loader, 'get_loaded_modules')) {
+                $loaded_modules = $this->service_loader->get_loaded_modules();
+                $status['modules_loaded'] = count($loaded_modules);
+            }
+            
+            if (method_exists($this->service_loader, 'get_available_modules')) {
+                $available_modules = $this->service_loader->get_available_modules();
+                $status['modules_total'] = count($available_modules);
+            }
+            
+            // Check database tables
+            global $wpdb;
+            $tables = array(
+                'posts' => $wpdb->posts,
+                'postmeta' => $wpdb->postmeta,
+                'options' => $wpdb->options
+            );
+            
+            foreach ($tables as $name => $table) {
+                $status['database_tables'][$name] = $wpdb->get_var("SHOW TABLES LIKE '$table'") === $table;
+            }
+            
+            // Check API connections
+            $openai_key = get_option('kseo_openai_api_key');
+            $status['api_connections']['openai'] = !empty($openai_key);
+            
+        } catch (Exception $e) {
+            error_log('KE SEO Booster: Error getting plugin health status: ' . $e->getMessage());
+        }
+        
+        return $status;
+    }
 
     private static function prepend_outline(string $body, array $outline): string {
         if (empty($outline)) { return $body; }

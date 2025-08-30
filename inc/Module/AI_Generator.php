@@ -6,7 +6,6 @@
  * 
  * @package KSEO\SEO_Booster\Module
  */
-
 namespace KSEO\SEO_Booster\Module;
 
 class AI_Generator {

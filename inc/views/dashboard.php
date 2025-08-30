@@ -71,6 +71,60 @@ if (!defined('ABSPATH')) {
                     </span>
                     <span class="kseo-stat-label"><?php _e('Post Types', 'kseo-seo-booster'); ?></span>
                 </div>
+                <div class="kseo-stat-item">
+                    <span class="kseo-stat-number">
+                        <?php 
+                        try {
+                            if (method_exists($this, 'get_total_posts_count')) {
+                                echo esc_html((int) $this->get_total_posts_count());
+                            } else {
+                                echo '0';
+                                error_log('KE SEO Booster: get_total_posts_count method not found');
+                            }
+                        } catch (Exception $e) {
+                            echo '0';
+                            error_log('KE SEO Booster: Error getting total posts count: ' . $e->getMessage());
+                        }
+                        ?>
+                    </span>
+                    <span class="kseo-stat-label"><?php _e('Total Posts', 'kseo-seo-booster'); ?></span>
+                </div>
+                <div class="kseo-stat-item">
+                    <span class="kseo-stat-number">
+                        <?php 
+                        try {
+                            if (method_exists($this, 'get_schema_enabled_posts_count')) {
+                                echo esc_html((int) $this->get_schema_enabled_posts_count());
+                            } else {
+                                echo '0';
+                                error_log('KE SEO Booster: get_schema_enabled_posts_count method not found');
+                            }
+                        } catch (Exception $e) {
+                            echo '0';
+                            error_log('KE SEO Booster: Error getting schema enabled posts count: ' . $e->getMessage());
+                        }
+                        ?>
+                    </span>
+                    <span class="kseo-stat-label"><?php _e('Schema Enabled', 'kseo-seo-booster'); ?></span>
+                </div>
+                <div class="kseo-stat-item">
+                    <span class="kseo-stat-number">
+                        <?php 
+                        try {
+                            if (method_exists($this, 'get_social_tags_enabled_posts_count')) {
+                                echo esc_html((int) $this->get_social_tags_enabled_posts_count());
+                            } else {
+                                echo '0';
+                                error_log('KE SEO Booster: get_social_tags_enabled_posts_count method not found');
+                            }
+                        } catch (Exception $e) {
+                            echo '0';
+                            error_log('KE SEO Booster: Error getting social tags enabled posts count: ' . $e->getMessage());
+                        }
+                        ?>
+                    </span>
+                    <span class="kseo-stat-label"><?php _e('Social Tags', 'kseo-seo-booster'); ?></span>
+                </div>
             </div>
         </div>
         
@@ -154,6 +208,46 @@ if (!defined('ABSPATH')) {
                 </ol>
             </div>
         </div>
+        
+        <div class="kseo-health-status">
+            <h3><?php _e('Plugin Health Status', 'kseo-seo-booster'); ?></h3>
+            <div class="kseo-health-content">
+                <?php
+                try {
+                    if (method_exists($this, 'get_plugin_health_status')) {
+                        $health_status = $this->get_plugin_health_status();
+                        ?>
+                        <div class="kseo-health-grid">
+                            <div class="kseo-health-item">
+                                <strong><?php _e('Modules:', 'kseo-seo-booster'); ?></strong>
+                                <?php echo esc_html($health_status['modules_loaded']); ?> / <?php echo esc_html($health_status['modules_total']); ?>
+                            </div>
+                            <div class="kseo-health-item">
+                                <strong><?php _e('Database Tables:', 'kseo-seo-booster'); ?></strong>
+                                <?php 
+                                $table_status = array_filter($health_status['database_tables']);
+                                echo esc_html(count($table_status)) . ' / ' . esc_html(count($health_status['database_tables']));
+                                ?>
+                            </div>
+                            <div class="kseo-health-item">
+                                <strong><?php _e('API Connections:', 'kseo-seo-booster'); ?></strong>
+                                <?php 
+                                $api_status = array_filter($health_status['api_connections']);
+                                echo esc_html(count($api_status)) . ' / ' . esc_html(count($health_status['api_connections']));
+                                ?>
+                            </div>
+                        </div>
+                        <?php
+                    } else {
+                        echo '<p>' . __('Plugin health status not available.', 'kseo-seo-booster') . '</p>';
+                    }
+                } catch (Exception $e) {
+                    error_log('KE SEO Booster: Error getting plugin health status: ' . $e->getMessage());
+                    echo '<p>' . __('Unable to load plugin health status. Please check the error logs.', 'kseo-seo-booster') . '</p>';
+                }
+                ?>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -232,5 +326,30 @@ if (!defined('ABSPATH')) {
 
 .kseo-help-content li {
     margin-bottom: 10px;
+}
+
+.kseo-health-status {
+    margin-top: 30px;
+}
+
+.kseo-health-content {
+    background: #fff;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-top: 20px;
+}
+
+.kseo-health-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.kseo-health-item {
+    padding: 15px;
+    background: #f9f9f9;
+    border-radius: 3px;
+    text-align: center;
 }
 </style> 
