@@ -873,4 +873,84 @@ class Plugin {
             return array();
         }
     }
+
+    /**
+     * Get count of optimized posts
+     * 
+     * @return int
+     */
+    public function get_optimized_posts_count() {
+        try {
+            // TODO: Implement real query to count optimized posts
+            // For now, return 0 safely
+            return 0;
+        } catch (\Exception $e) {
+            error_log("KE SEO Booster: Error in get_optimized_posts_count - " . $e->getMessage());
+            return 0;
+        }
+    }
+
+    /**
+     * Get total keywords count
+     * 
+     * @return int
+     */
+    public function get_total_keywords_count() {
+        try {
+            // TODO: Implement real query to count total keywords
+            // For now, return 0 safely
+            return 0;
+        } catch (\Exception $e) {
+            error_log("KE SEO Booster: Error in get_total_keywords_count - " . $e->getMessage());
+            return 0;
+        }
+    }
+
+    /**
+     * Get schema markup enabled posts count
+     * 
+     * @return int
+     */
+    public function get_schema_enabled_posts_count() {
+        try {
+            // TODO: Implement real query to count schema enabled posts
+            // For now, return 0 safely
+            return 0;
+        } catch (\Exception $e) {
+            error_log("KE SEO Booster: Error in get_schema_enabled_posts_count - " . $e->getMessage());
+            return 0;
+        }
+    }
+
+    /**
+     * Get social tags enabled posts count
+     * 
+     * @return int
+     */
+    public function get_social_tags_enabled_posts_count() {
+        try {
+            // TODO: Implement real query to count social tags enabled posts
+            // For now, return 0 safely
+            return 0;
+        } catch (\Exception $e) {
+            error_log("KE SEO Booster: Error in get_social_tags_enabled_posts_count - " . $e->getMessage());
+            return 0;
+        }
+    }
+
+    /**
+     * Get total posts count for configured post types
+     * 
+     * @return int
+     */
+    public function get_total_posts_count() {
+        try {
+            // TODO: Implement real query to count total posts
+            // For now, return 0 safely
+            return 0;
+        } catch (\Exception $e) {
+            error_log("KE SEO Booster: Error in get_total_keywords_count - " . $e->getMessage());
+            return 0;
+        }
+    }
 } 
