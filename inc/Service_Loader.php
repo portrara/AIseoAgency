@@ -59,19 +59,30 @@ class Service_Loader {
      * @since 2.0.0
      */
     private function load_enabled_modules() {
-        $enabled_modules = get_option('kseo_modules', array());
-        
-        foreach ($this->modules as $module_key => $module_class) {
-            // Always load settings module
-            if ($module_key === 'settings') {
-                $this->load_module($module_key, $module_class);
-                continue;
+        try {
+            $enabled_modules = get_option('kseo_modules', array());
+            
+            // Ensure enabled_modules is always an array
+            if (!is_array($enabled_modules)) {
+                error_log('KE SEO Booster: kseo_modules option is not an array, resetting to defaults');
+                $enabled_modules = array();
+                update_option('kseo_modules', $enabled_modules);
             }
             
-            // Load other modules only if enabled
-            if (isset($enabled_modules[$module_key]) && $enabled_modules[$module_key]) {
-                $this->load_module($module_key, $module_class);
+            foreach ($this->modules as $module_key => $module_class) {
+                // Always load settings module
+                if ($module_key === 'settings') {
+                    $this->load_module($module_key, $module_class);
+                    continue;
+                }
+                
+                // Load other modules only if enabled
+                if (isset($enabled_modules[$module_key]) && $enabled_modules[$module_key]) {
+                    $this->load_module($module_key, $module_class);
+                }
             }
+        } catch (Exception $e) {
+            error_log('KE SEO Booster: Error loading enabled modules: ' . $e->getMessage());
         }
     }
     
@@ -121,7 +132,17 @@ class Service_Loader {
      * @return object|null The module instance or null if not loaded.
      */
     public function get_module($module_key) {
-        return isset($this->loaded_modules[$module_key]) ? $this->loaded_modules[$module_key] : null;
+        try {
+            if (!is_string($module_key)) {
+                error_log('KE SEO Booster: Invalid module key type: ' . gettype($module_key));
+                return null;
+            }
+            
+            return isset($this->loaded_modules[$module_key]) ? $this->loaded_modules[$module_key] : null;
+        } catch (Exception $e) {
+            error_log('KE SEO Booster: Error getting module ' . $module_key . ': ' . $e->getMessage());
+            return null;
+        }
     }
     
     /**

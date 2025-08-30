@@ -19,15 +19,56 @@ if (!defined('ABSPATH')) {
             <h3><?php _e('Quick Stats', 'kseo-seo-booster'); ?></h3>
             <div class="kseo-stats-grid">
                 <div class="kseo-stat-item">
-                    <span class="kseo-stat-number kseo-stats-posts"><?php echo esc_html((int) (method_exists($this, 'get_optimized_posts_count') ? $this->get_optimized_posts_count() : 0)); ?></span>
+                    <span class="kseo-stat-number kseo-stats-posts">
+                        <?php 
+                        try {
+                            if (method_exists($this, 'get_optimized_posts_count')) {
+                                echo esc_html((int) $this->get_optimized_posts_count());
+                            } else {
+                                echo '0';
+                                error_log('KE SEO Booster: get_optimized_posts_count method not found');
+                            }
+                        } catch (Exception $e) {
+                            echo '0';
+                            error_log('KE SEO Booster: Error getting optimized posts count: ' . $e->getMessage());
+                        }
+                        ?>
+                    </span>
                     <span class="kseo-stat-label"><?php _e('Posts Optimized', 'kseo-seo-booster'); ?></span>
                 </div>
                 <div class="kseo-stat-item">
-                    <span class="kseo-stat-number kseo-stats-keywords"><?php echo esc_html((int) (method_exists($this, 'get_total_keywords_count') ? $this->get_total_keywords_count() : 0)); ?></span>
+                    <span class="kseo-stat-number kseo-stats-keywords">
+                        <?php 
+                        try {
+                            if (method_exists($this, 'get_total_keywords_count')) {
+                                echo esc_html((int) $this->get_total_keywords_count());
+                            } else {
+                                echo '0';
+                                error_log('KE SEO Booster: get_total_keywords_count method not found');
+                            }
+                        } catch (Exception $e) {
+                            echo '0';
+                            error_log('KE SEO Booster: Error getting total keywords count: ' . $e->getMessage());
+                        }
+                        ?>
+                    </span>
                     <span class="kseo-stat-label"><?php _e('Total Keywords', 'kseo-seo-booster'); ?></span>
                 </div>
                 <div class="kseo-stat-item">
-                    <span class="kseo-stat-number"><?php echo esc_html((int) count(get_option('kseo_post_types', array()))); ?></span>
+                    <span class="kseo-stat-number">
+                        <?php 
+                        try {
+                            $post_types = get_option('kseo_post_types', array('post', 'page'));
+                            if (!is_array($post_types)) {
+                                $post_types = array('post', 'page');
+                            }
+                            echo esc_html((int) count($post_types));
+                        } catch (Exception $e) {
+                            echo '0';
+                            error_log('KE SEO Booster: Error getting post types count: ' . $e->getMessage());
+                        }
+                        ?>
+                    </span>
                     <span class="kseo-stat-label"><?php _e('Post Types', 'kseo-seo-booster'); ?></span>
                 </div>
             </div>
@@ -52,36 +93,51 @@ if (!defined('ABSPATH')) {
             <h3><?php _e('Recent Activity', 'kseo-seo-booster'); ?></h3>
             <div class="kseo-activity-list">
                 <?php
-                $recent_posts = get_posts(array(
-                    'numberposts' => 5,
-                    'post_type' => get_option('kseo_post_types', array('post', 'page')),
-                    'meta_query' => array(
-                        array(
-                            'key' => '_kseo_title',
-                            'compare' => 'EXISTS'
-                        )
-                    )
-                ));
-                
-                if ($recent_posts) {
-                    foreach ($recent_posts as $post) {
-                        $seo_title = get_post_meta($post->ID, '_kseo_title', true);
-                        $seo_description = get_post_meta($post->ID, '_kseo_description', true);
-                        ?>
-                        <div class="kseo-activity-item">
-                            <h4><a href="<?php echo get_edit_post_link($post->ID); ?>"><?php echo esc_html($post->post_title); ?></a></h4>
-                            <?php if ($seo_title) : ?>
-                                <p><strong><?php _e('SEO Title:', 'kseo-seo-booster'); ?></strong> <?php echo esc_html($seo_title); ?></p>
-                            <?php endif; ?>
-                            <?php if ($seo_description) : ?>
-                                <p><strong><?php _e('Meta Description:', 'kseo-seo-booster'); ?></strong> <?php echo esc_html(wp_trim_words($seo_description, 10)); ?></p>
-                            <?php endif; ?>
-                            <small><?php echo get_the_date('', $post->ID); ?></small>
-                        </div>
-                        <?php
+                try {
+                    $post_types = get_option('kseo_post_types', array('post', 'page'));
+                    if (!is_array($post_types)) {
+                        $post_types = array('post', 'page');
                     }
-                } else {
-                    echo '<p>' . __('No optimized posts found. Start by editing a post and adding SEO meta.', 'kseo-seo-booster') . '</p>';
+                    
+                    $recent_posts = get_posts(array(
+                        'numberposts' => 5,
+                        'post_type' => $post_types,
+                        'meta_query' => array(
+                            array(
+                                'key' => '_kseo_title',
+                                'compare' => 'EXISTS'
+                            )
+                        )
+                    ));
+                    
+                    if ($recent_posts) {
+                        foreach ($recent_posts as $post) {
+                            try {
+                                $seo_title = get_post_meta($post->ID, '_kseo_title', true);
+                                $seo_description = get_post_meta($post->ID, '_kseo_description', true);
+                                ?>
+                                <div class="kseo-activity-item">
+                                    <h4><a href="<?php echo get_edit_post_link($post->ID); ?>"><?php echo esc_html($post->post_title); ?></a></h4>
+                                    <?php if ($seo_title) : ?>
+                                        <p><strong><?php _e('SEO Title:', 'kseo-seo-booster'); ?></strong> <?php echo esc_html($seo_title); ?></p>
+                                    <?php endif; ?>
+                                    <?php if ($seo_description) : ?>
+                                        <p><strong><?php _e('Meta Description:', 'kseo-seo-booster'); ?></strong> <?php echo esc_html(wp_trim_words($seo_description, 10)); ?></p>
+                                    <?php endif; ?>
+                                    <small><?php echo get_the_date('', $post->ID); ?></small>
+                                </div>
+                                <?php
+                            } catch (Exception $e) {
+                                error_log('KE SEO Booster: Error processing post ' . $post->ID . ': ' . $e->getMessage());
+                                continue;
+                            }
+                        }
+                    } else {
+                        echo '<p>' . __('No optimized posts found. Start by editing a post and adding SEO meta.', 'kseo-seo-booster') . '</p>';
+                    }
+                } catch (Exception $e) {
+                    error_log('KE SEO Booster: Error loading recent activity: ' . $e->getMessage());
+                    echo '<p>' . __('Unable to load recent activity. Please check the error logs.', 'kseo-seo-booster') . '</p>';
                 }
                 ?>
             </div>

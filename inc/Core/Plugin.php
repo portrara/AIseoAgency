@@ -247,11 +247,17 @@ class Plugin {
      * @param WP_Post $post
      */
     public function meta_box_callback($post) {
-        $meta_box = $this->service_loader->get_module('meta_box');
-        if ($meta_box) {
-            $meta_box->render($post);
-        } else {
-            echo '<p>SEO meta box module not available.</p>';
+        try {
+            $meta_box = $this->service_loader->get_module('meta_box');
+            if ($meta_box) {
+                $meta_box->render($post);
+            } else {
+                error_log('KE SEO Booster: Meta box module not available');
+                echo '<p>SEO meta box module not available. Please check the error logs.</p>';
+            }
+        } catch (Exception $e) {
+            error_log('KE SEO Booster: Meta box error: ' . $e->getMessage());
+            echo '<p>Meta box error occurred. Please check the error logs.</p>';
         }
     }
     
@@ -261,11 +267,15 @@ class Plugin {
      * @param int $post_id
      */
     public function save_post_meta($post_id) {
-        $meta_box = $this->service_loader->get_module('meta_box');
-        if ($meta_box) {
-            $meta_box->save($post_id);
-        } else {
-            error_log('KE SEO Booster: Meta box module not available for saving post ' . $post_id);
+        try {
+            $meta_box = $this->service_loader->get_module('meta_box');
+            if ($meta_box) {
+                $meta_box->save($post_id);
+            } else {
+                error_log('KE SEO Booster: Meta box module not available for saving post ' . $post_id);
+            }
+        } catch (Exception $e) {
+            error_log('KE SEO Booster: Error saving post meta for post ' . $post_id . ': ' . $e->getMessage());
         }
     }
     
@@ -273,11 +283,15 @@ class Plugin {
      * Output meta tags
      */
     public function output_meta_tags() {
-        $meta_output = $this->service_loader->get_module('meta_output');
-        if ($meta_output) {
-            $meta_output->output();
-        } else {
-            error_log('KE SEO Booster: Meta output module not available');
+        try {
+            $meta_output = $this->service_loader->get_module('meta_output');
+            if ($meta_output) {
+                $meta_output->output();
+            } else {
+                error_log('KE SEO Booster: Meta output module not available');
+            }
+        } catch (Exception $e) {
+            error_log('KE SEO Booster: Meta output error: ' . $e->getMessage());
         }
     }
     
@@ -285,11 +299,15 @@ class Plugin {
      * Output schema markup
      */
     public function output_schema_markup() {
-        $schema = $this->service_loader->get_module('schema');
-        if ($schema) {
-            $schema->output();
-        } else {
-            error_log('KE SEO Booster: Schema module not available');
+        try {
+            $schema = $this->service_loader->get_module('schema');
+            if ($schema) {
+                $schema->output();
+            } else {
+                error_log('KE SEO Booster: Schema module not available');
+            }
+        } catch (Exception $e) {
+            error_log('KE SEO Booster: Schema output error: ' . $e->getMessage());
         }
     }
     
@@ -297,11 +315,15 @@ class Plugin {
      * Output Open Graph tags
      */
     public function output_og_tags() {
-        $social_tags = $this->service_loader->get_module('social_tags');
-        if ($social_tags) {
-            $social_tags->output();
-        } else {
-            error_log('KE SEO Booster: Social tags module not available');
+        try {
+            $social_tags = $this->service_loader->get_module('social_tags');
+            if ($social_tags) {
+                $social_tags->output();
+            } else {
+                error_log('KE SEO Booster: Social tags module not available');
+            }
+        } catch (Exception $e) {
+            error_log('KE SEO Booster: Social tags output error: ' . $e->getMessage());
         }
     }
     
@@ -309,10 +331,29 @@ class Plugin {
      * Dashboard page
      */
     public function dashboard_page() {
-        if (file_exists(KSEO_PLUGIN_DIR . 'inc/views/dashboard.php')) {
-            include KSEO_PLUGIN_DIR . 'inc/views/dashboard.php';
-        } else {
-            echo '<div class="wrap"><h1>KE SEO Booster Pro</h1><p>Dashboard view file not found.</p></div>';
+        try {
+            if (file_exists(KSEO_PLUGIN_DIR . 'inc/views/dashboard.php')) {
+                // Set error reporting to log errors instead of displaying them
+                $old_error_reporting = error_reporting();
+                error_reporting(E_ALL);
+                
+                // Capture any output errors
+                ob_start();
+                include KSEO_PLUGIN_DIR . 'inc/views/dashboard.php';
+                $output = ob_get_clean();
+                
+                // Restore error reporting
+                error_reporting($old_error_reporting);
+                
+                // Output the dashboard
+                echo $output;
+            } else {
+                error_log('KE SEO Booster: Dashboard view file not found at ' . KSEO_PLUGIN_DIR . 'inc/views/dashboard.php');
+                echo '<div class="wrap"><h1>KE SEO Booster Pro</h1><p>Dashboard view file not found. Please check the error logs.</p></div>';
+            }
+        } catch (Exception $e) {
+            error_log('KE SEO Booster: Dashboard error: ' . $e->getMessage());
+            echo '<div class="wrap"><h1>KE SEO Booster Pro</h1><p>Dashboard error occurred. Please check the error logs.</p></div>';
         }
     }
     
@@ -320,11 +361,17 @@ class Plugin {
      * Settings page
      */
     public function settings_page() {
-        $settings = $this->service_loader->get_module('settings');
-        if ($settings) {
-            $settings->render();
-        } else {
-            echo '<div class="wrap"><h1>Settings</h1><p>Settings module not available.</p></div>';
+        try {
+            $settings = $this->service_loader->get_module('settings');
+            if ($settings) {
+                $settings->render();
+            } else {
+                error_log('KE SEO Booster: Settings module not available');
+                echo '<div class="wrap"><h1>Settings</h1><p>Settings module not available. Please check the error logs.</p></div>';
+            }
+        } catch (Exception $e) {
+            error_log('KE SEO Booster: Settings page error: ' . $e->getMessage());
+            echo '<div class="wrap"><h1>Settings</h1><p>Settings error occurred. Please check the error logs.</p></div>';
         }
     }
     
@@ -332,11 +379,17 @@ class Plugin {
      * Bulk audit page
      */
     public function bulk_audit_page() {
-        $bulk_audit = $this->service_loader->get_module('bulk_audit');
-        if ($bulk_audit) {
-            $bulk_audit->render();
-        } else {
-            echo '<div class="wrap"><h1>Bulk Audit</h1><p>Bulk audit module not available.</p></div>';
+        try {
+            $bulk_audit = $this->service_loader->get_module('bulk_audit');
+            if ($bulk_audit) {
+                $bulk_audit->render();
+            } else {
+                error_log('KE SEO Booster: Bulk audit module not available');
+                echo '<div class="wrap"><h1>Bulk Audit</h1><p>Bulk audit module not available. Please check the error logs.</p></div>';
+            }
+        } catch (Exception $e) {
+            error_log('KE SEO Booster: Bulk audit page error: ' . $e->getMessage());
+            echo '<div class="wrap"><h1>Bulk Audit</h1><p>Bulk audit error occurred. Please check the error logs.</p></div>';
         }
     }
     
