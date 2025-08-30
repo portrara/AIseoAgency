@@ -1,11 +1,11 @@
 <?php
+namespace KSEO\SEO_Booster\Core;
+
 /**
  * Main Plugin Class for KE SEO Booster Pro
  * 
  * @package KSEO\SEO_Booster\Core
  */
-
-namespace KSEO\SEO_Booster\Core;
 
 use KSEO\SEO_Booster\Service_Loader;
 

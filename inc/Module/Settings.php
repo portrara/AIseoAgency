@@ -1,4 +1,6 @@
 <?php
+namespace KSEO\SEO_Booster\Module;
+
 /**
  * Settings Module for KE SEO Booster Pro
  * 
@@ -6,8 +8,6 @@
  * 
  * @package KSEO\SEO_Booster\Module
  */
-
-namespace KSEO\SEO_Booster\Module;
 
 class Settings {
     
