@@ -146,6 +146,11 @@ class Settings {
                         $post_types = get_post_types(array('public' => true), 'objects');
                         $selected_types = get_option('kseo_post_types', array('post', 'page'));
                         
+                        // Ensure selected_types is always an array
+                        if (!is_array($selected_types)) {
+                            $selected_types = array('post', 'page');
+                        }
+                        
                         foreach ($post_types as $post_type) {
                             $checked = in_array($post_type->name, $selected_types) ? 'checked' : '';
                             echo '<label><input type="checkbox" name="kseo_post_types[]" value="' . esc_attr($post_type->name) . '" ' . $checked . ' /> ' . esc_html($post_type->label) . '</label><br>';
@@ -196,7 +201,13 @@ class Settings {
                         <label for="kseo_ai_cache_ttl"><?php _e('Cache TTL (hours)', 'kseo-seo-booster'); ?></label>
                     </th>
                     <td>
-                        <?php $kseo_ai = get_option('kseo_ai', array()); $cache_ttl = isset($kseo_ai['cache_ttl']) ? intval($kseo_ai['cache_ttl']) : 6; ?>
+                        <?php 
+                        $kseo_ai = get_option('kseo_ai', array()); 
+                        if (!is_array($kseo_ai)) {
+                            $kseo_ai = array();
+                        }
+                        $cache_ttl = isset($kseo_ai['cache_ttl']) ? intval($kseo_ai['cache_ttl']) : 6; 
+                        ?>
                         <input type="number" min="1" max="168" id="kseo_ai_cache_ttl" name="kseo_ai[cache_ttl]" value="<?php echo esc_attr($cache_ttl); ?>" />
                         <p class="description"><?php _e('Default cache time for heavy operations. Default 6h.', 'kseo-seo-booster'); ?></p>
                     </td>
@@ -254,6 +265,11 @@ class Settings {
      */
     private function render_modules_tab() {
         $enabled_modules = get_option('kseo_modules', array());
+        
+        // Ensure enabled_modules is always an array
+        if (!is_array($enabled_modules)) {
+            $enabled_modules = array();
+        }
         ?>
         <form method="post" action="options.php">
             <?php settings_fields('kseo_options'); ?>
@@ -303,7 +319,13 @@ class Settings {
                 <tr>
                     <th scope="row"><?php _e('SERP Provider', 'kseo-seo-booster'); ?></th>
                     <td>
-                        <?php $kseo_ai = get_option('kseo_ai', array()); $provider = isset($kseo_ai['serp_provider']) ? $kseo_ai['serp_provider'] : 'stub'; ?>
+                        <?php 
+                        $kseo_ai = get_option('kseo_ai', array()); 
+                        if (!is_array($kseo_ai)) {
+                            $kseo_ai = array();
+                        }
+                        $provider = isset($kseo_ai['serp_provider']) ? $kseo_ai['serp_provider'] : 'stub'; 
+                        ?>
                         <select name="kseo_ai[serp_provider]">
                             <option value="stub" <?php selected($provider, 'stub'); ?>><?php _e('Stub (deterministic)', 'kseo-seo-booster'); ?></option>
                             <option value="serpapi" <?php selected($provider, 'serpapi'); ?>>SERP API</option>
@@ -376,7 +398,12 @@ class Settings {
                 <tr>
                     <th scope="row"><label for="kseo_ai_gsc_client_id"><?php _e('GSC Client ID', 'kseo-seo-booster'); ?></label></th>
                     <td>
-                        <?php $kseo_ai = get_option('kseo_ai', array()); ?>
+                        <?php 
+                        $kseo_ai = get_option('kseo_ai', array()); 
+                        if (!is_array($kseo_ai)) {
+                            $kseo_ai = array();
+                        }
+                        ?>
                         <input type="text" id="kseo_ai_gsc_client_id" name="kseo_ai[gsc_client_id]" value="<?php echo isset($kseo_ai['gsc_client_id']) ? esc_attr($kseo_ai['gsc_client_id']) : ''; ?>" class="regular-text" />
                     </td>
                 </tr>
@@ -426,7 +453,12 @@ class Settings {
         <h2><?php _e('Feature Flags', 'kseo-seo-booster'); ?></h2>
         <form method="post" action="options.php">
             <?php settings_fields('kseo_options'); ?>
-            <?php $flags = get_option('kseo_feature_flags', array()); ?>
+                                    <?php 
+                        $flags = get_option('kseo_feature_flags', array()); 
+                        if (!is_array($flags)) {
+                            $flags = array();
+                        }
+                        ?>
             <table class="form-table">
                 <tr>
                     <th scope="row"><?php _e('Enable Rate Limiting', 'kseo-seo-booster'); ?></th>
@@ -448,7 +480,12 @@ class Settings {
         <h2><?php _e('Alerts', 'kseo-seo-booster'); ?></h2>
         <form method="post" action="options.php">
             <?php settings_fields('kseo_options'); ?>
-            <?php $kseo_ai = get_option('kseo_ai', array()); ?>
+                                    <?php 
+                        $kseo_ai = get_option('kseo_ai', array()); 
+                        if (!is_array($kseo_ai)) {
+                            $kseo_ai = array();
+                        }
+                        ?>
             <table class="form-table">
                 <tr>
                     <th scope="row"><?php _e('Email Alerts', 'kseo-seo-booster'); ?></th>
@@ -485,7 +522,12 @@ class Settings {
         <h2><?php _e('Rate Limits', 'kseo-seo-booster'); ?></h2>
         <form method="post" action="options.php">
             <?php settings_fields('kseo_options'); ?>
-            <?php $limits = get_option('kseo_rate_limits', array()); ?>
+                                    <?php 
+                        $limits = get_option('kseo_rate_limits', array()); 
+                        if (!is_array($limits)) {
+                            $limits = array();
+                        }
+                        ?>
             <table class="form-table">
                 <tr>
                     <th scope="row"><code>POST:/kseo/v1/keywords/research</code></th>
@@ -624,6 +666,11 @@ class Settings {
                                     $post_types = get_post_types(array('public' => true), 'objects');
                                     $selected_types = get_option('kseo_post_types', array('post', 'page'));
                                     
+                                    // Ensure selected_types is always an array
+                                    if (!is_array($selected_types)) {
+                                        $selected_types = array('post', 'page');
+                                    }
+                                    
                                     foreach ($post_types as $post_type) {
                                         $checked = in_array($post_type->name, $selected_types) ? 'checked' : '';
                                         echo '<label><input type="checkbox" name="kseo_post_types[]" value="' . esc_attr($post_type->name) . '" ' . $checked . ' /> ' . esc_html($post_type->label) . '</label><br>';
@@ -736,6 +783,9 @@ class Settings {
      */
     private function get_google_credential($key) {
         $credentials = get_option('kseo_google_ads_credentials', array());
+        if (!is_array($credentials)) {
+            $credentials = array();
+        }
         return isset($credentials[$key]) ? $credentials[$key] : '';
     }
 
