@@ -610,6 +610,7 @@ class Settings {
                 <h2><?php _e('Welcome to KE SEO Booster Pro!', 'kseo-seo-booster'); ?></h2>
                 <p><?php _e('Let\'s get your SEO plugin configured in just a few steps.', 'kseo-seo-booster'); ?></p>
                 
+                <form id="kseo-onboarding-form">
                 <div class="kseo-onboarding-steps">
                     <div class="kseo-step active" data-step="1">
                         <h3><?php _e('Step 1: Basic Configuration', 'kseo-seo-booster'); ?></h3>
@@ -674,6 +675,7 @@ class Settings {
                         <button type="button" class="button button-primary kseo-complete-setup"><?php _e('Complete Setup', 'kseo-seo-booster'); ?></button>
                     </div>
                 </div>
+                </form>
             </div>
             
             <script>
@@ -695,6 +697,9 @@ class Settings {
                 });
                 
                 $('.kseo-complete-setup').on('click', function() {
+                    // Use the form to serialize data
+                    var serializedData = $('#kseo-onboarding-form').serialize();
+                    
                     // Save settings and mark onboarding as complete
                     $.ajax({
                         url: kseo_ajax.ajax_url,
@@ -702,12 +707,18 @@ class Settings {
                         data: {
                             action: 'kseo_complete_onboarding',
                             nonce: kseo_ajax.nonce,
-                            formData: $('.kseo-onboarding-wizard form').serialize()
+                            formData: serializedData
                         },
                         success: function(response) {
                             if (response.success) {
                                 window.location.href = '<?php echo admin_url('admin.php?page=kseo-dashboard'); ?>';
+                            } else {
+                                alert('Setup failed: ' + (response.data || 'Unknown error'));
                             }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Setup error:', error);
+                            alert('Setup failed. Please check the console for details.');
                         }
                     });
                 });

@@ -120,6 +120,9 @@ class Plugin {
         // Admin-AJAX: CSV export and apply draft
         add_action('wp_ajax_kseo_ai_export_csv', array($this, 'ajax_kseo_ai_export_csv'));
         add_action('wp_ajax_kseo_ai_apply_draft', array($this, 'ajax_kseo_ai_apply_draft'));
+        
+        // Setup wizard completion
+        add_action('wp_ajax_kseo_complete_onboarding', array($this, 'ajax_complete_onboarding'));
     }
     
     /**
@@ -247,6 +250,8 @@ class Plugin {
         $meta_box = $this->service_loader->get_module('meta_box');
         if ($meta_box) {
             $meta_box->render($post);
+        } else {
+            echo '<p>SEO meta box module not available.</p>';
         }
     }
     
@@ -259,6 +264,8 @@ class Plugin {
         $meta_box = $this->service_loader->get_module('meta_box');
         if ($meta_box) {
             $meta_box->save($post_id);
+        } else {
+            error_log('KE SEO Booster: Meta box module not available for saving post ' . $post_id);
         }
     }
     
@@ -269,6 +276,8 @@ class Plugin {
         $meta_output = $this->service_loader->get_module('meta_output');
         if ($meta_output) {
             $meta_output->output();
+        } else {
+            error_log('KE SEO Booster: Meta output module not available');
         }
     }
     
@@ -279,6 +288,8 @@ class Plugin {
         $schema = $this->service_loader->get_module('schema');
         if ($schema) {
             $schema->output();
+        } else {
+            error_log('KE SEO Booster: Schema module not available');
         }
     }
     
@@ -289,6 +300,8 @@ class Plugin {
         $social_tags = $this->service_loader->get_module('social_tags');
         if ($social_tags) {
             $social_tags->output();
+        } else {
+            error_log('KE SEO Booster: Social tags module not available');
         }
     }
     
@@ -296,7 +309,11 @@ class Plugin {
      * Dashboard page
      */
     public function dashboard_page() {
-        include KSEO_PLUGIN_DIR . 'inc/views/dashboard.php';
+        if (file_exists(KSEO_PLUGIN_DIR . 'inc/views/dashboard.php')) {
+            include KSEO_PLUGIN_DIR . 'inc/views/dashboard.php';
+        } else {
+            echo '<div class="wrap"><h1>KE SEO Booster Pro</h1><p>Dashboard view file not found.</p></div>';
+        }
     }
     
     /**
@@ -306,6 +323,8 @@ class Plugin {
         $settings = $this->service_loader->get_module('settings');
         if ($settings) {
             $settings->render();
+        } else {
+            echo '<div class="wrap"><h1>Settings</h1><p>Settings module not available.</p></div>';
         }
     }
     
@@ -316,6 +335,8 @@ class Plugin {
         $bulk_audit = $this->service_loader->get_module('bulk_audit');
         if ($bulk_audit) {
             $bulk_audit->render();
+        } else {
+            echo '<div class="wrap"><h1>Bulk Audit</h1><p>Bulk audit module not available.</p></div>';
         }
     }
     
@@ -468,6 +489,91 @@ class Plugin {
         wp_send_json_success(array('ok' => true, 'draft_post_id' => $draft_id));
     }
 
+    /**
+     * AJAX: Complete onboarding/setup wizard
+     */
+    public function ajax_complete_onboarding() {
+        // Verify nonce
+        if (!check_ajax_referer('kseo_nonce', 'nonce', false)) {
+            error_log('KE SEO Booster: Onboarding nonce verification failed');
+            wp_send_json_error('Security check failed. Please refresh the page and try again.');
+        }
+        
+        // Check permissions
+        if (!current_user_can('manage_options')) {
+            error_log('KE SEO Booster: Onboarding permission denied for user ' . get_current_user_id());
+            wp_send_json_error('Permission denied. You need administrator privileges to complete setup.');
+        }
+        
+        try {
+            // Log the request for debugging
+            error_log('KE SEO Booster: Onboarding completion request received. POST data: ' . print_r($_POST, true));
+            
+            // Parse form data
+            $form_data = array();
+            if (isset($_POST['formData'])) {
+                parse_str($_POST['formData'], $form_data);
+            }
+            
+            // Save post types
+            if (isset($form_data['kseo_post_types']) && is_array($form_data['kseo_post_types'])) {
+                $post_types = array_map('sanitize_text_field', $form_data['kseo_post_types']);
+                update_option('kseo_post_types', $post_types);
+                error_log('KE SEO Booster: Saved post types: ' . print_r($post_types, true));
+            }
+            
+            // Save OpenAI API key if provided
+            if (isset($form_data['kseo_openai_api_key']) && !empty($form_data['kseo_openai_api_key'])) {
+                update_option('kseo_openai_api_key', sanitize_text_field($form_data['kseo_openai_api_key']));
+                error_log('KE SEO Booster: Saved OpenAI API key');
+            }
+            
+            // Save module settings
+            $modules = array(
+                'meta_box' => true,
+                'meta_output' => true,
+                'social_tags' => isset($form_data['kseo_modules']['social_tags']),
+                'schema' => isset($form_data['kseo_modules']['schema']),
+                'sitemap' => isset($form_data['kseo_modules']['sitemap']),
+                'keyword_suggest' => false,
+                'ai_generator' => false,
+                'bulk_audit' => false,
+                'internal_link' => false,
+                'api' => true
+            );
+            update_option('kseo_modules', $modules);
+            error_log('KE SEO Booster: Saved modules: ' . print_r($modules, true));
+            
+            // Mark onboarding as completed
+            update_option('kseo_onboarding_completed', true);
+            error_log('KE SEO Booster: Onboarding marked as completed');
+            
+            // Set default options
+            $default_options = array(
+                'kseo_auto_generate' => true,
+                'kseo_enable_schema' => true,
+                'kseo_enable_og_tags' => true,
+                'kseo_version' => KSEO_VERSION
+            );
+            
+            foreach ($default_options as $option => $value) {
+                if (get_option($option) === false) {
+                    add_option($option, $value);
+                }
+            }
+            
+            // Flush rewrite rules for sitemap
+            flush_rewrite_rules();
+            
+            error_log('KE SEO Booster: Onboarding completed successfully');
+            wp_send_json_success('Setup completed successfully!');
+            
+        } catch (Exception $e) {
+            error_log('KE SEO Booster: Onboarding completion error: ' . $e->getMessage());
+            wp_send_json_error('Setup failed: ' . $e->getMessage());
+        }
+    }
+
     private static function prepend_outline(string $body, array $outline): string {
         if (empty($outline)) { return $body; }
         $html = "\n";
@@ -477,4 +583,4 @@ class Plugin {
         }
         return $html . $body;
     }
-} 
+}

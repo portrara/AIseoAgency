@@ -25,3 +25,4 @@
 
 That's it! Your SEO plugin is ready to use.
 
+
