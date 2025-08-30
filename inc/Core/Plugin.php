@@ -490,6 +490,60 @@ class Plugin {
     }
 
     /**
+     * Get count of optimized posts
+     */
+    public function get_optimized_posts_count() {
+        global $wpdb;
+        
+        $post_types = get_option('kseo_post_types', array('post', 'page'));
+        if (!is_array($post_types)) {
+            $post_types = array('post', 'page');
+        }
+        
+        $post_types_placeholders = implode(',', array_fill(0, count($post_types), '%s'));
+        
+        $query = $wpdb->prepare(
+            "SELECT COUNT(DISTINCT p.ID) 
+            FROM {$wpdb->posts} p 
+            INNER JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id 
+            WHERE p.post_type IN ($post_types_placeholders) 
+            AND p.post_status = 'publish' 
+            AND pm.meta_key IN ('_kseo_title', '_kseo_description') 
+            AND pm.meta_value != ''",
+            ...$post_types
+        );
+        
+        return (int) $wpdb->get_var($query);
+    }
+    
+    /**
+     * Get total keywords count
+     */
+    public function get_total_keywords_count() {
+        global $wpdb;
+        
+        $post_types = get_option('kseo_post_types', array('post', 'page'));
+        if (!is_array($post_types)) {
+            $post_types = array('post', 'page');
+        }
+        
+        $post_types_placeholders = implode(',', array_fill(0, count($post_types), '%s'));
+        
+        $query = $wpdb->prepare(
+            "SELECT COUNT(*) 
+            FROM {$wpdb->postmeta} pm 
+            INNER JOIN {$wpdb->posts} p ON pm.post_id = p.ID 
+            WHERE p.post_type IN ($post_types_placeholders) 
+            AND p.post_status = 'publish' 
+            AND pm.meta_key = '_kseo_keywords' 
+            AND pm.meta_value != ''",
+            ...$post_types
+        );
+        
+        return (int) $wpdb->get_var($query);
+    }
+
+    /**
      * AJAX: Complete onboarding/setup wizard
      */
     public function ajax_complete_onboarding() {

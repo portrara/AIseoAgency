@@ -19,11 +19,11 @@ if (!defined('ABSPATH')) {
             <h3><?php _e('Quick Stats', 'kseo-seo-booster'); ?></h3>
             <div class="kseo-stats-grid">
                 <div class="kseo-stat-item">
-                    <span class="kseo-stat-number kseo-stats-posts"><?php echo esc_html((int) $this->get_optimized_posts_count()); ?></span>
+                    <span class="kseo-stat-number kseo-stats-posts"><?php echo esc_html((int) (method_exists($this, 'get_optimized_posts_count') ? $this->get_optimized_posts_count() : 0)); ?></span>
                     <span class="kseo-stat-label"><?php _e('Posts Optimized', 'kseo-seo-booster'); ?></span>
                 </div>
                 <div class="kseo-stat-item">
-                    <span class="kseo-stat-number kseo-stats-keywords"><?php echo esc_html((int) $this->get_total_keywords_count()); ?></span>
+                    <span class="kseo-stat-number kseo-stats-keywords"><?php echo esc_html((int) (method_exists($this, 'get_total_keywords_count') ? $this->get_total_keywords_count() : 0)); ?></span>
                     <span class="kseo-stat-label"><?php _e('Total Keywords', 'kseo-seo-booster'); ?></span>
                 </div>
                 <div class="kseo-stat-item">

@@ -1,4 +1,3 @@
-
 <?php
 /**
  * Meta Output Module for KE SEO Booster Pro
