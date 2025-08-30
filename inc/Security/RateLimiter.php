@@ -1,14 +1,17 @@
 <?php
+namespace KSEO\SEO_Booster\Security;
+
 /**
- * Redis-backed rate limiter with transient fallback
- *
+ * Rate Limiter Module for KE SEO Booster Pro
+ * 
  * @package KSEO\SEO_Booster\Security
  */
 
-namespace KSEO\SEO_Booster\Security;
-
-if (!defined('ABSPATH')) { exit; }
-
+/**
+ * Rate Limiter Class
+ * 
+ * @since 2.0.0
+ */
 class RateLimiter {
     /**
      * Check allowance for a route+actor with limit per minute.

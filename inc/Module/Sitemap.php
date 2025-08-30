@@ -1,14 +1,17 @@
 <?php
+namespace KSEO\SEO_Booster\Module;
+
 /**
  * Sitemap Module for KE SEO Booster Pro
- * 
- * Handles XML sitemap generation.
  * 
  * @package KSEO\SEO_Booster\Module
  */
 
-namespace KSEO\SEO_Booster\Module;
-
+/**
+ * Sitemap Class
+ * 
+ * @since 2.0.0
+ */
 class Sitemap {
     
     /**

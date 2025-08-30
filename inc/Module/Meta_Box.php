@@ -1,16 +1,14 @@
 <?php
+namespace KSEO\SEO_Booster\Module;
+
 /**
  * Meta Box Module for KE SEO Booster Pro
- * 
- * Handles SEO meta boxes for posts and pages with AI generation capabilities.
  * 
  * @package KSEO\SEO_Booster\Module
  */
 
-namespace KSEO\SEO_Booster\Module;
-
 /**
- * Meta Box Module Class
+ * Meta Box Class
  * 
  * @since 2.0.0
  */

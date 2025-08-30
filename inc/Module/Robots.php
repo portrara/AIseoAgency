@@ -1,14 +1,17 @@
 <?php
+namespace KSEO\SEO_Booster\Module;
+
 /**
  * Robots Module for KE SEO Booster Pro
- * 
- * Handles robots.txt editing.
  * 
  * @package KSEO\SEO_Booster\Module
  */
 
-namespace KSEO\SEO_Booster\Module;
-
+/**
+ * Robots Class
+ * 
+ * @since 2.0.0
+ */
 class Robots {
     
     /**

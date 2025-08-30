@@ -1,14 +1,17 @@
 <?php
+namespace KSEO\SEO_Booster\Security;
+
 /**
- * Keyring for envelope encryption
- *
+ * Keyring Module for KE SEO Booster Pro
+ * 
  * @package KSEO\SEO_Booster\Security
  */
 
-namespace KSEO\SEO_Booster\Security;
-
-if (!defined('ABSPATH')) { exit; }
-
+/**
+ * Keyring Class
+ * 
+ * @since 2.0.0
+ */
 class Keyring {
     /**
      * Return active key id and binary key material

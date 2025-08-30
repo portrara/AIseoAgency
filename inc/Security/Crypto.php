@@ -1,17 +1,17 @@
 <?php
+namespace KSEO\SEO_Booster\Security;
+
 /**
- * Simple crypto helper for encrypting sensitive data at rest
- *
+ * Crypto Module for KE SEO Booster Pro
+ * 
  * @package KSEO\SEO_Booster\Security
  */
 
-namespace KSEO\SEO_Booster\Security;
-
-// Prevent direct access
-if (!defined('ABSPATH')) {
-    exit;
-}
-
+/**
+ * Crypto Class
+ * 
+ * @since 2.0.0
+ */
 class Crypto {
     /**
      * Derive a stable 32-byte key from WP salts

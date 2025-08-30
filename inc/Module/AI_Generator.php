@@ -1,13 +1,17 @@
 <?php
+namespace KSEO\SEO_Booster\Module;
+
 /**
  * AI Generator Module for KE SEO Booster Pro
  * 
- * Handles OpenAI API integration for content generation.
- * 
  * @package KSEO\SEO_Booster\Module
  */
-namespace KSEO\SEO_Booster\Module;
 
+/**
+ * AI Generator Class
+ * 
+ * @since 2.0.0
+ */
 class AI_Generator {
     
     /**

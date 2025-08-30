@@ -1,14 +1,17 @@
 <?php
+namespace KSEO\SEO_Booster\Module;
+
 /**
  * Social Tags Module for KE SEO Booster Pro
- * 
- * Handles Open Graph and Twitter card tags.
  * 
  * @package KSEO\SEO_Booster\Module
  */
 
-namespace KSEO\SEO_Booster\Module;
-
+/**
+ * Social Tags Class
+ * 
+ * @since 2.0.0
+ */
 class Social_Tags {
     
     /**

@@ -248,5 +248,4 @@ ob_start();
 
 <?php
 // Flush output buffer
-ob_end_flush();
-?> 
+ob_end_flush(); 

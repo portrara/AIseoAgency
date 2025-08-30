@@ -1,14 +1,17 @@
 <?php
+namespace KSEO\SEO_Booster\Support;
+
 /**
- * Feature flags helper
- *
+ * Flags Module for KE SEO Booster Pro
+ * 
  * @package KSEO\SEO_Booster\Support
  */
 
-namespace KSEO\SEO_Booster\Support;
-
-if (!defined('ABSPATH')) { exit; }
-
+/**
+ * Flags Class
+ * 
+ * @since 2.0.0
+ */
 class Flags {
     public static function all(): array {
         $defaults = array(

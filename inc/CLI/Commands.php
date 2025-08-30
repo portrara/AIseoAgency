@@ -1,11 +1,11 @@
 <?php
+namespace KSEO\SEO_Booster\CLI;
+
 /**
  * WP-CLI Commands for KE SEO Booster Pro
  * 
  * @package KSEO\SEO_Booster\CLI
  */
-
-namespace KSEO\SEO_Booster\CLI;
 
 /**
  * WP-CLI Commands Class
@@ -88,7 +88,7 @@ class Commands {
                         $meta_output->clear_cache($post_id);
                         
                         // Generate fresh meta tags (this will cache them)
-                        $meta_tags = $this->generate_meta_tags($post);
+                        $meta_tags = $meta_output->generate_meta_tags($post);
                         if ($meta_tags) {
                             $meta_output->cache_meta_tags($post_id, $meta_tags);
                         }

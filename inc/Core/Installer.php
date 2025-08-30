@@ -1,14 +1,17 @@
 <?php
+namespace KSEO\SEO_Booster\Core;
+
 /**
- * Database installer for KE SEO Booster Pro
- *
+ * Installer Module for KE SEO Booster Pro
+ * 
  * @package KSEO\SEO_Booster\Core
  */
 
-namespace KSEO\SEO_Booster\Core;
-
-use wpdb;
-
+/**
+ * Installer Class
+ * 
+ * @since 2.0.0
+ */
 class Installer {
     /**
      * Run database migrations using dbDelta

@@ -1,14 +1,17 @@
 <?php
+namespace KSEO\SEO_Booster\Module;
+
 /**
  * Keyword Suggest Module for KE SEO Booster Pro
- * 
- * Handles Google Ads API keyword suggestions.
  * 
  * @package KSEO\SEO_Booster\Module
  */
 
-namespace KSEO\SEO_Booster\Module;
-
+/**
+ * Keyword Suggest Class
+ * 
+ * @since 2.0.0
+ */
 class Keyword_Suggest {
     
     /**

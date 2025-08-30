@@ -1,14 +1,17 @@
 <?php
+namespace KSEO\SEO_Booster\Core;
+
 /**
- * Security helpers for KE SEO Booster Pro
- *
+ * Security Module for KE SEO Booster Pro
+ * 
  * @package KSEO\SEO_Booster\Core
  */
 
-namespace KSEO\SEO_Booster\Core;
-
-if (!defined('ABSPATH')) { exit; }
-
+/**
+ * Security Class
+ * 
+ * @since 2.0.0
+ */
 class Security {
     /**
      * Per-user rate limit using transients (user-scoped)

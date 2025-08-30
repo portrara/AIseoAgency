@@ -1,14 +1,17 @@
 <?php
+namespace KSEO\SEO_Booster\Core;
+
 /**
- * Cron and batch handlers
- *
+ * Jobs Module for KE SEO Booster Pro
+ * 
  * @package KSEO\SEO_Booster\Core
  */
 
-namespace KSEO\SEO_Booster\Core;
-
-if (!defined('ABSPATH')) { exit; }
-
+/**
+ * Jobs Class
+ * 
+ * @since 2.0.0
+ */
 class Jobs {
     public static function init(): void {
         add_filter('cron_schedules', array(__CLASS__, 'add_weekly'));

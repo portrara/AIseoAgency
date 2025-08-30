@@ -247,17 +247,9 @@ class Plugin {
      * @param WP_Post $post
      */
     public function meta_box_callback($post) {
-        try {
-            $meta_box = $this->service_loader->get_module('meta_box');
-            if ($meta_box) {
-                $meta_box->render($post);
-            } else {
-                error_log('KE SEO Booster: Meta box module not available');
-                echo '<p>SEO meta box module not available. Please check the error logs.</p>';
-            }
-        } catch (Exception $e) {
-            error_log('KE SEO Booster: Meta box error: ' . $e->getMessage());
-            echo '<p>Meta box error occurred. Please check the error logs.</p>';
+        $meta_box = $this->service_loader->get_module('meta_box');
+        if ($meta_box) {
+            $meta_box->render($post);
         }
     }
     
@@ -267,15 +259,9 @@ class Plugin {
      * @param int $post_id
      */
     public function save_post_meta($post_id) {
-        try {
-            $meta_box = $this->service_loader->get_module('meta_box');
-            if ($meta_box) {
-                $meta_box->save($post_id);
-            } else {
-                error_log('KE SEO Booster: Meta box module not available for saving post ' . $post_id);
-            }
-        } catch (Exception $e) {
-            error_log('KE SEO Booster: Error saving post meta for post ' . $post_id . ': ' . $e->getMessage());
+        $meta_box = $this->service_loader->get_module('meta_box');
+        if ($meta_box) {
+            $meta_box->save($post_id);
         }
     }
     
@@ -283,15 +269,9 @@ class Plugin {
      * Output meta tags
      */
     public function output_meta_tags() {
-        try {
-            $meta_output = $this->service_loader->get_module('meta_output');
-            if ($meta_output) {
-                $meta_output->output();
-            } else {
-                error_log('KE SEO Booster: Meta output module not available');
-            }
-        } catch (Exception $e) {
-            error_log('KE SEO Booster: Meta output error: ' . $e->getMessage());
+        $meta_output = $this->service_loader->get_module('meta_output');
+        if ($meta_output) {
+            $meta_output->output();
         }
     }
     
@@ -299,15 +279,9 @@ class Plugin {
      * Output schema markup
      */
     public function output_schema_markup() {
-        try {
-            $schema = $this->service_loader->get_module('schema');
-            if ($schema) {
-                $schema->output();
-            } else {
-                error_log('KE SEO Booster: Schema module not available');
-            }
-        } catch (Exception $e) {
-            error_log('KE SEO Booster: Schema output error: ' . $e->getMessage());
+        $schema = $this->service_loader->get_module('schema');
+        if ($schema) {
+            $schema->output();
         }
     }
     
@@ -315,15 +289,9 @@ class Plugin {
      * Output Open Graph tags
      */
     public function output_og_tags() {
-        try {
-            $social_tags = $this->service_loader->get_module('social_tags');
-            if ($social_tags) {
-                $social_tags->output();
-            } else {
-                error_log('KE SEO Booster: Social tags module not available');
-            }
-        } catch (Exception $e) {
-            error_log('KE SEO Booster: Social tags output error: ' . $e->getMessage());
+        $social_tags = $this->service_loader->get_module('social_tags');
+        if ($social_tags) {
+            $social_tags->output();
         }
     }
     
@@ -331,47 +299,16 @@ class Plugin {
      * Dashboard page
      */
     public function dashboard_page() {
-        try {
-            if (file_exists(KSEO_PLUGIN_DIR . 'inc/views/dashboard.php')) {
-                // Set error reporting to log errors instead of displaying them
-                $old_error_reporting = error_reporting();
-                error_reporting(E_ALL);
-                
-                // Capture any output errors
-                ob_start();
-                include KSEO_PLUGIN_DIR . 'inc/views/dashboard.php';
-                $output = ob_get_clean();
-                
-                // Restore error reporting
-                error_reporting($old_error_reporting);
-                
-                // Output the dashboard
-                echo $output;
-            } else {
-                error_log('KE SEO Booster: Dashboard view file not found at ' . KSEO_PLUGIN_DIR . 'inc/views/dashboard.php');
-                echo '<div class="wrap"><h1>KE SEO Booster Pro</h1><p>Dashboard view file not found. Please check the error logs.</p></div>';
-            }
-        } catch (Exception $e) {
-            error_log('KE SEO Booster: Dashboard error: ' . $e->getMessage());
-            echo '<div class="wrap"><h1>KE SEO Booster Pro</h1><p>Dashboard error occurred. Please check the error logs.</p></div>';
-        }
+        include KSEO_PLUGIN_DIR . 'inc/views/dashboard.php';
     }
     
     /**
      * Settings page
      */
     public function settings_page() {
-        try {
-            $settings = $this->service_loader->get_module('settings');
-            if ($settings) {
-                $settings->render();
-            } else {
-                error_log('KE SEO Booster: Settings module not available');
-                echo '<div class="wrap"><h1>Settings</h1><p>Settings module not available. Please check the error logs.</p></div>';
-            }
-        } catch (Exception $e) {
-            error_log('KE SEO Booster: Settings page error: ' . $e->getMessage());
-            echo '<div class="wrap"><h1>Settings</h1><p>Settings error occurred. Please check the error logs.</p></div>';
+        $settings = $this->service_loader->get_module('settings');
+        if ($settings) {
+            $settings->render();
         }
     }
     
@@ -379,17 +316,9 @@ class Plugin {
      * Bulk audit page
      */
     public function bulk_audit_page() {
-        try {
-            $bulk_audit = $this->service_loader->get_module('bulk_audit');
-            if ($bulk_audit) {
-                $bulk_audit->render();
-            } else {
-                error_log('KE SEO Booster: Bulk audit module not available');
-                echo '<div class="wrap"><h1>Bulk Audit</h1><p>Bulk audit module not available. Please check the error logs.</p></div>';
-            }
-        } catch (Exception $e) {
-            error_log('KE SEO Booster: Bulk audit page error: ' . $e->getMessage());
-            echo '<div class="wrap"><h1>Bulk Audit</h1><p>Bulk audit error occurred. Please check the error logs.</p></div>';
+        $bulk_audit = $this->service_loader->get_module('bulk_audit');
+        if ($bulk_audit) {
+            $bulk_audit->render();
         }
     }
     
@@ -543,60 +472,6 @@ class Plugin {
     }
 
     /**
-     * Get count of optimized posts
-     */
-    public function get_optimized_posts_count() {
-        global $wpdb;
-        
-        $post_types = get_option('kseo_post_types', array('post', 'page'));
-        if (!is_array($post_types)) {
-            $post_types = array('post', 'page');
-        }
-        
-        $post_types_placeholders = implode(',', array_fill(0, count($post_types), '%s'));
-        
-        $query = $wpdb->prepare(
-            "SELECT COUNT(DISTINCT p.ID) 
-            FROM {$wpdb->posts} p 
-            INNER JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id 
-            WHERE p.post_type IN ($post_types_placeholders) 
-            AND p.post_status = 'publish' 
-            AND pm.meta_key IN ('_kseo_title', '_kseo_description') 
-            AND pm.meta_value != ''",
-            ...$post_types
-        );
-        
-        return (int) $wpdb->get_var($query);
-    }
-    
-    /**
-     * Get total keywords count
-     */
-    public function get_total_keywords_count() {
-        global $wpdb;
-        
-        $post_types = get_option('kseo_post_types', array('post', 'page'));
-        if (!is_array($post_types)) {
-            $post_types = array('post', 'page');
-        }
-        
-        $post_types_placeholders = implode(',', array_fill(0, count($post_types), '%s'));
-        
-        $query = $wpdb->prepare(
-            "SELECT COUNT(*) 
-            FROM {$wpdb->postmeta} pm 
-            INNER JOIN {$wpdb->posts} p ON pm.post_id = p.ID 
-            WHERE p.post_type IN ($post_types_placeholders) 
-            AND p.post_status = 'publish' 
-            AND pm.meta_key = '_kseo_keywords' 
-            AND pm.meta_value != ''",
-            ...$post_types
-        );
-        
-        return (int) $wpdb->get_var($query);
-    }
-
-    /**
      * AJAX: Complete onboarding/setup wizard
      */
     public function ajax_complete_onboarding() {
@@ -680,7 +555,71 @@ class Plugin {
             wp_send_json_error('Setup failed: ' . $e->getMessage());
         }
     }
+
+    private static function prepend_outline(string $body, array $outline): string {
+        if (empty($outline)) { return $body; }
+        $html = "\n";
+        foreach ($outline as $sec) {
+            $h2 = isset($sec['h2']) ? sanitize_text_field($sec['h2']) : '';
+            if ($h2 !== '') { $html .= '<h2>' . esc_html($h2) . '</h2>' . "\n"; }
+        }
+        return $html . $body;
+    }
+
+    /**
+     * Get count of optimized posts
+     */
+    public function get_optimized_posts_count() {
+        global $wpdb;
+        
+        $post_types = get_option('kseo_post_types', array('post', 'page'));
+        if (!is_array($post_types)) {
+            $post_types = array('post', 'page');
+        }
+        
+        $post_types_placeholders = implode(',', array_fill(0, count($post_types), '%s'));
+        
+        $query = $wpdb->prepare(
+            "SELECT COUNT(DISTINCT p.ID) 
+            FROM {$wpdb->posts} p 
+            INNER JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id 
+            WHERE p.post_type IN ($post_types_placeholders) 
+            AND p.post_status = 'publish' 
+            AND pm.meta_key IN ('_kseo_title', '_kseo_description') 
+            AND pm.meta_value != ''",
+            ...$post_types
+        );
+        
+        return (int) $wpdb->get_var($query);
+    }
     
+    /**
+     * Get total keywords count
+     */
+    public function get_total_keywords_count() {
+        global $wpdb;
+        
+        $post_types = get_option('kseo_post_types', array('post', 'page'));
+        if (!is_array($post_types)) {
+            $post_types = array('post', 'page');
+        }
+        
+        $post_types_placeholders = implode(',', array_fill(0, count($post_types), '%s'));
+        
+        $query = $wpdb->prepare(
+            "SELECT COUNT(*) 
+            FROM {$wpdb->postmeta} pm 
+            INNER JOIN {$wpdb->posts} p ON pm.post_id = p.ID 
+            WHERE p.post_type IN ($post_types_placeholders) 
+            AND p.post_status = 'publish' 
+            AND pm.meta_key = '_kseo_keywords' 
+            AND pm.meta_value != ''",
+            ...$post_types
+        );
+        
+        return (int) $wpdb->get_var($query);
+    }
+
     /**
      * Get schema markup enabled posts count
      * 
@@ -812,14 +751,4 @@ class Plugin {
         
         return $status;
     }
-
-    private static function prepend_outline(string $body, array $outline): string {
-        if (empty($outline)) { return $body; }
-        $html = "\n";
-        foreach ($outline as $sec) {
-            $h2 = isset($sec['h2']) ? sanitize_text_field($sec['h2']) : '';
-            if ($h2 !== '') { $html .= '<h2>' . esc_html($h2) . '</h2>' . "\n"; }
-        }
-        return $html . $body;
-    }
-}
+} 

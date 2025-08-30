@@ -1,14 +1,17 @@
 <?php
+namespace KSEO\SEO_Booster\Module;
+
 /**
  * Internal Link Module for KE SEO Booster Pro
- * 
- * Handles automatic internal linking.
  * 
  * @package KSEO\SEO_Booster\Module
  */
 
-namespace KSEO\SEO_Booster\Module;
-
+/**
+ * Internal Link Class
+ * 
+ * @since 2.0.0
+ */
 class Internal_Link {
     
     /**

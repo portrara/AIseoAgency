@@ -129,7 +129,7 @@ class Service_Loader {
      * 
      * @since 2.0.0
      * @param string $module_key The module key.
-     * @return object|null The module instance or null if not loaded.
+     * @return object|null The module instance or null if not found.
      */
     public function get_module($module_key) {
         try {

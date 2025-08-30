@@ -1,12 +1,17 @@
 <?php
+namespace KSEO\SEO_Booster\Module;
+
 /**
- * REST API Module
- *
+ * API Module for KE SEO Booster Pro
+ * 
  * @package KSEO\SEO_Booster\Module
  */
 
-namespace KSEO\SEO_Booster\Module;
-
+/**
+ * API Class
+ * 
+ * @since 2.0.0
+ */
 class API {
     /** @var string */
     private $namespace = 'kseo/v1';

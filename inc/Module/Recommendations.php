@@ -1,14 +1,17 @@
 <?php
+namespace KSEO\SEO_Booster\Module;
+
 /**
- * Deterministic recommendations generator
- *
+ * Recommendations Module for KE SEO Booster Pro
+ * 
  * @package KSEO\SEO_Booster\Module
  */
 
-namespace KSEO\SEO_Booster\Module;
-
-if (!defined('ABSPATH')) { exit; }
-
+/**
+ * Recommendations Class
+ * 
+ * @since 2.0.0
+ */
 class Recommendations {
     /**
      * Build recommendations from analysis and post context

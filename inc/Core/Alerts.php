@@ -1,14 +1,17 @@
 <?php
+namespace KSEO\SEO_Booster\Core;
+
 /**
- * Alerts: email and Slack notifications
- *
+ * Alerts Module for KE SEO Booster Pro
+ * 
  * @package KSEO\SEO_Booster\Core
  */
 
-namespace KSEO\SEO_Booster\Core;
-
-if (!defined('ABSPATH')) { exit; }
-
+/**
+ * Alerts Class
+ * 
+ * @since 2.0.0
+ */
 class Alerts {
     public static function send(string $type, array $payload): void {
         $opt = get_option('kseo_ai', array());

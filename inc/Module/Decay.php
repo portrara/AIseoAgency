@@ -1,14 +1,17 @@
 <?php
+namespace KSEO\SEO_Booster\Module;
+
 /**
- * Traffic decay detector (deterministic proxies when GSC absent)
- *
+ * Decay Module for KE SEO Booster Pro
+ * 
  * @package KSEO\SEO_Booster\Module
  */
 
-namespace KSEO\SEO_Booster\Module;
-
-if (!defined('ABSPATH')) { exit; }
-
+/**
+ * Decay Class
+ * 
+ * @since 2.0.0
+ */
 class Decay {
     public static function scan_recent(): int {
         $cached = \KSEO\SEO_Booster\Core\Cache::get('kseo:decay:scan');

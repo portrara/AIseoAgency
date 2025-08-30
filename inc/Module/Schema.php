@@ -1,14 +1,17 @@
 <?php
+namespace KSEO\SEO_Booster\Module;
+
 /**
  * Schema Module for KE SEO Booster Pro
- * 
- * Handles JSON-LD schema markup generation.
  * 
  * @package KSEO\SEO_Booster\Module
  */
 
-namespace KSEO\SEO_Booster\Module;
-
+/**
+ * Schema Class
+ * 
+ * @since 2.0.0
+ */
 class Schema {
     
     /**

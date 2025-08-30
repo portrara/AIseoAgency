@@ -1,14 +1,17 @@
 <?php
+namespace KSEO\SEO_Booster\Module;
+
 /**
- * Cannibalization detector
- *
+ * Cannibalization Module for KE SEO Booster Pro
+ * 
  * @package KSEO\SEO_Booster\Module
  */
 
-namespace KSEO\SEO_Booster\Module;
-
-if (!defined('ABSPATH')) { exit; }
-
+/**
+ * Cannibalization Class
+ * 
+ * @since 2.0.0
+ */
 class Cannibalization {
     /**
      * Scan recent assignments and optional GSC signals to detect cannibalization

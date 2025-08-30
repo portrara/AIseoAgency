@@ -1,14 +1,17 @@
 <?php
+namespace KSEO\SEO_Booster\Module;
+
 /**
- * Deterministic content analysis (no external APIs)
- *
+ * Analysis Module for KE SEO Booster Pro
+ * 
  * @package KSEO\SEO_Booster\Module
  */
 
-namespace KSEO\SEO_Booster\Module;
-
-if (!defined('ABSPATH')) { exit; }
-
+/**
+ * Analysis Class
+ * 
+ * @since 2.0.0
+ */
 class Analysis {
     /**
      * Analyze content and seed to extract entities, intent, difficulty, suggestions

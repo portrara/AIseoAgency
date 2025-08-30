@@ -1,14 +1,17 @@
 <?php
+namespace KSEO\SEO_Booster\Core;
+
 /**
- * Cache helper using object cache with transient fallback
- *
+ * Cache Module for KE SEO Booster Pro
+ * 
  * @package KSEO\SEO_Booster\Core
  */
 
-namespace KSEO\SEO_Booster\Core;
-
-if (!defined('ABSPATH')) { exit; }
-
+/**
+ * Cache Class
+ * 
+ * @since 2.0.0
+ */
 class Cache {
     public static function get(string $key) {
         if (function_exists('wp_cache_get')) {

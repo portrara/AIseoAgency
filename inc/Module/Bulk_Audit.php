@@ -1,14 +1,17 @@
 <?php
+namespace KSEO\SEO_Booster\Module;
+
 /**
  * Bulk Audit Module for KE SEO Booster Pro
- * 
- * Handles bulk SEO audit and optimization.
  * 
  * @package KSEO\SEO_Booster\Module
  */
 
-namespace KSEO\SEO_Booster\Module;
-
+/**
+ * Bulk Audit Class
+ * 
+ * @since 2.0.0
+ */
 class Bulk_Audit {
     
     /**

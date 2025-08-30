@@ -1,14 +1,17 @@
 <?php
+namespace KSEO\SEO_Booster\Core;
+
 /**
- * Storage helpers for AI keywords and events
- *
+ * Storage Module for KE SEO Booster Pro
+ * 
  * @package KSEO\SEO_Booster\Core
  */
 
-namespace KSEO\SEO_Booster\Core;
-
-if (!defined('ABSPATH')) { exit; }
-
+/**
+ * Storage Class
+ * 
+ * @since 2.0.0
+ */
 class Storage {
     /**
      * Save analysis/assignment result row
