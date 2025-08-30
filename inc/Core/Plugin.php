@@ -567,188 +567,310 @@ class Plugin {
     }
 
     /**
-     * Get count of optimized posts
-     */
-    public function get_optimized_posts_count() {
-        global $wpdb;
-        
-        $post_types = get_option('kseo_post_types', array('post', 'page'));
-        if (!is_array($post_types)) {
-            $post_types = array('post', 'page');
-        }
-        
-        $post_types_placeholders = implode(',', array_fill(0, count($post_types), '%s'));
-        
-        $query = $wpdb->prepare(
-            "SELECT COUNT(DISTINCT p.ID) 
-            FROM {$wpdb->posts} p 
-            INNER JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id 
-            WHERE p.post_type IN ($post_types_placeholders) 
-            AND p.post_status = 'publish' 
-            AND pm.meta_key IN ('_kseo_title', '_kseo_description') 
-            AND pm.meta_value != ''",
-            ...$post_types
-        );
-        
-        return (int) $wpdb->get_var($query);
-    }
-    
-    /**
-     * Get total keywords count
-     */
-    public function get_total_keywords_count() {
-        global $wpdb;
-        
-        $post_types = get_option('kseo_post_types', array('post', 'page'));
-        if (!is_array($post_types)) {
-            $post_types = array('post', 'page');
-        }
-        
-        $post_types_placeholders = implode(',', array_fill(0, count($post_types), '%s'));
-        
-        $query = $wpdb->prepare(
-            "SELECT COUNT(*) 
-            FROM {$wpdb->postmeta} pm 
-            INNER JOIN {$wpdb->posts} p ON pm.post_id = p.ID 
-            WHERE p.post_type IN ($post_types_placeholders) 
-            AND p.post_status = 'publish' 
-            AND pm.meta_key = '_kseo_keywords' 
-            AND pm.meta_value != ''",
-            ...$post_types
-        );
-        
-        return (int) $wpdb->get_var($query);
-    }
-
-    /**
-     * Get schema markup enabled posts count
-     * 
-     * @return int
-     */
-    public function get_schema_enabled_posts_count() {
-        global $wpdb;
-        
-        $post_types = get_option('kseo_post_types', array('post', 'page'));
-        if (!is_array($post_types)) {
-            $post_types = array('post', 'page');
-        }
-        
-        $post_types_placeholders = implode(',', array_fill(0, count($post_types), '%s'));
-        
-        $query = $wpdb->prepare(
-            "SELECT COUNT(DISTINCT p.ID) 
-            FROM {$wpdb->posts} p 
-            INNER JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id 
-            WHERE p.post_type IN ($post_types_placeholders) 
-            AND p.post_status = 'publish' 
-            AND pm.meta_key = '_kseo_schema_enabled' 
-            AND pm.meta_value = '1'",
-            ...$post_types
-        );
-        
-        return (int) $wpdb->get_var($query);
-    }
-    
-    /**
-     * Get social tags enabled posts count
-     * 
-     * @return int
-     */
-    public function get_social_tags_enabled_posts_count() {
-        global $wpdb;
-        
-        $post_types = get_option('kseo_post_types', array('post', 'page'));
-        if (!is_array($post_types)) {
-            $post_types = array('post', 'page');
-        }
-        
-        $post_types_placeholders = implode(',', array_fill(0, count($post_types), '%s'));
-        
-        $query = $wpdb->prepare(
-            "SELECT COUNT(DISTINCT p.ID) 
-            FROM {$wpdb->posts} p 
-            INNER JOIN {$wpdb->postmeta} pm ON p.ID = pm.post_id 
-            WHERE p.post_type IN ($post_types_placeholders) 
-            AND p.post_status = 'publish' 
-            AND pm.meta_key = '_kseo_social_enabled' 
-            AND pm.meta_value = '1'",
-            ...$post_types
-        );
-        
-        return (int) $wpdb->get_var($query);
-    }
-    
-    /**
-     * Get total posts count for configured post types
-     * 
-     * @return int
-     */
-    public function get_total_posts_count() {
-        global $wpdb;
-        
-        $post_types = get_option('kseo_post_types', array('post', 'page'));
-        if (!is_array($post_types)) {
-            $post_types = array('post', 'page');
-        }
-        
-        $post_types_placeholders = implode(',', array_fill(0, count($post_types), '%s'));
-        
-        $query = $wpdb->prepare(
-            "SELECT COUNT(*) 
-            FROM {$wpdb->posts} 
-            WHERE post_type IN ($post_types_placeholders) 
-            AND post_status = 'publish'",
-            ...$post_types
-        );
-        
-        return (int) $wpdb->get_var($query);
-    }
-    
-    /**
-     * Get plugin health status
+     * Load enabled modules
      * 
      * @return array
      */
-    public function get_plugin_health_status() {
-        $status = array(
-            'modules_loaded' => 0,
-            'modules_total' => 0,
-            'database_tables' => array(),
-            'api_connections' => array()
-        );
-        
+    public function load_enabled_modules() {
         try {
-            // Count loaded modules
+            // TODO: Implement real module loading logic
             if (method_exists($this->service_loader, 'get_loaded_modules')) {
-                $loaded_modules = $this->service_loader->get_loaded_modules();
-                $status['modules_loaded'] = count($loaded_modules);
+                return $this->service_loader->get_loaded_modules();
             }
-            
-            if (method_exists($this->service_loader, 'get_available_modules')) {
-                $available_modules = $this->service_loader->get_available_modules();
-                $status['modules_total'] = count($available_modules);
-            }
-            
-            // Check database tables
-            global $wpdb;
-            $tables = array(
-                'posts' => $wpdb->posts,
-                'postmeta' => $wpdb->postmeta,
-                'options' => $wpdb->options
-            );
-            
-            foreach ($tables as $name => $table) {
-                $status['database_tables'][$name] = $wpdb->get_var("SHOW TABLES LIKE '$table'") === $table;
-            }
-            
-            // Check API connections
-            $openai_key = get_option('kseo_openai_api_key');
-            $status['api_connections']['openai'] = !empty($openai_key);
-            
-        } catch (Exception $e) {
-            error_log('KE SEO Booster: Error getting plugin health status: ' . $e->getMessage());
+            return array();
+        } catch (\Exception $e) {
+            error_log('KE SEO Booster: Error in load_enabled_modules - ' . $e->getMessage());
+            return array();
         }
-        
-        return $status;
+    }
+
+    /**
+     * Register WP-CLI commands
+     * 
+     * @return bool
+     */
+    public function register_wp_cli_commands() {
+        try {
+            // TODO: Implement real WP-CLI command registration
+            if (defined('WP_CLI') && WP_CLI && class_exists('WP_CLI')) {
+                return true;
+            }
+            return false;
+        } catch (\Exception $e) {
+            error_log('KE SEO Booster: Error in register_wp_cli_commands - ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Load a specific module
+     * 
+     * @param string $module_key
+     * @return object|null
+     */
+    public function load_module($module_key) {
+        try {
+            // TODO: Implement real module loading logic
+            if (method_exists($this->service_loader, 'get_module')) {
+                return $this->service_loader->get_module($module_key);
+            }
+            return null;
+        } catch (\Exception $e) {
+            error_log('KE SEO Booster: Error in load_module - ' . $e->getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Generate meta tags for a post
+     * 
+     * @param mixed $post
+     * @return string
+     */
+    public function generate_meta_tags($post = null) {
+        try {
+            // TODO: Implement real meta tag generation
+            if ($post && is_object($post)) {
+                $meta_output = $this->service_loader->get_module('meta_output');
+                if ($meta_output && method_exists($meta_output, 'generate_meta_tags')) {
+                    return $meta_output->generate_meta_tags($post);
+                }
+            }
+            return '';
+        } catch (\Exception $e) {
+            error_log('KE SEO Booster: Error in generate_meta_tags - ' . $e->getMessage());
+            return '';
+        }
+    }
+
+    /**
+     * Get cached meta tags for a post
+     * 
+     * @param int $post_id
+     * @return string|false
+     */
+    public function get_cached_meta_tags($post_id) {
+        try {
+            // TODO: Implement real cache retrieval logic
+            $cache_key = 'kseo_meta_' . $post_id;
+            return get_transient($cache_key);
+        } catch (\Exception $e) {
+            error_log('KE SEO Booster: Error in get_cached_meta_tags - ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Cache meta tags for a post
+     * 
+     * @param int $post_id
+     * @param string $meta_tags
+     * @return bool
+     */
+    public function cache_meta_tags($post_id, $meta_tags) {
+        try {
+            // TODO: Implement real cache storage logic
+            $cache_key = 'kseo_meta_' . $post_id;
+            return set_transient($cache_key, $meta_tags, 30 * MINUTE_IN_SECONDS);
+        } catch (\Exception $e) {
+            error_log('KE SEO Booster: Error in cache_meta_tags - ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Generate Open Graph tags
+     * 
+     * @param mixed $post
+     * @param string $title
+     * @param string $description
+     * @return string
+     */
+    public function generate_og_tags($post = null, $title = '', $description = '') {
+        try {
+            // TODO: Implement real Open Graph tag generation
+            if ($post && is_object($post)) {
+                $social_tags = $this->service_loader->get_module('social_tags');
+                if ($social_tags && method_exists($social_tags, 'generate_og_tags')) {
+                    return $social_tags->generate_og_tags($post, $title, $description);
+                }
+            }
+            return '';
+        } catch (\Exception $e) {
+            error_log('KE SEO Booster: Error in generate_og_tags - ' . $e->getMessage());
+            return '';
+        }
+    }
+
+    /**
+     * Generate Twitter card tags
+     * 
+     * @param mixed $post
+     * @param string $title
+     * @param string $description
+     * @return string
+     */
+    public function generate_twitter_tags($post = null, $title = '', $description = '') {
+        try {
+            // TODO: Implement real Twitter card tag generation
+            if ($post && is_object($post)) {
+                $social_tags = $this->service_loader->get_module('social_tags');
+                if ($social_tags && method_exists($social_tags, 'generate_twitter_tags')) {
+                    return $social_tags->generate_twitter_tags($post, $title, $description);
+                }
+            }
+            return '';
+        } catch (\Exception $e) {
+            error_log('KE SEO Booster: Error in generate_twitter_tags - ' . $e->getMessage());
+            return '';
+        }
+    }
+
+    /**
+     * Clear cache for a post
+     * 
+     * @param int $post_id
+     * @return bool
+     */
+    public function clear_cache($post_id) {
+        try {
+            // TODO: Implement real cache clearing logic
+            $cache_key = 'kseo_meta_' . $post_id;
+            return delete_transient($cache_key);
+        } catch (\Exception $e) {
+            error_log('KE SEO Booster: Error in clear_cache - ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Render general settings tab
+     * 
+     * @return string
+     */
+    public function render_general_tab() {
+        try {
+            // TODO: Implement real general settings tab rendering
+            return '<p>General settings tab - coming soon</p>';
+        } catch (\Exception $e) {
+            error_log('KE SEO Booster: Error in render_general_tab - ' . $e->getMessage());
+            return '<p>Error loading general settings</p>';
+        }
+    }
+
+    /**
+     * Render modules settings tab
+     * 
+     * @return string
+     */
+    public function render_modules_tab() {
+        try {
+            // TODO: Implement real modules settings tab rendering
+            return '<p>Modules settings tab - coming soon</p>';
+        } catch (\Exception $e) {
+            error_log('KE SEO Booster: Error in render_modules_tab - ' . $e->getMessage());
+            return '<p>Error loading modules settings</p>';
+        }
+    }
+
+    /**
+     * Render API settings tab
+     * 
+     * @return string
+     */
+    public function render_api_tab() {
+        try {
+            // TODO: Implement real API settings tab rendering
+            return '<p>API settings tab - coming soon</p>';
+        } catch (\Exception $e) {
+            error_log('KE SEO Booster: Error in render_api_tab - ' . $e->getMessage());
+            return '<p>Error loading API settings</p>';
+        }
+    }
+
+    /**
+     * Render onboarding tab
+     * 
+     * @return string
+     */
+    public function render_onboarding_tab() {
+        try {
+            // TODO: Implement real onboarding tab rendering
+            return '<p>Onboarding tab - coming soon</p>';
+        } catch (\Exception $e) {
+            error_log('KE SEO Booster: Error in render_onboarding_tab - ' . $e->getMessage());
+            return '<p>Error loading onboarding</p>';
+        }
+    }
+
+    /**
+     * Get Google credential value
+     * 
+     * @param string $key
+     * @return string
+     */
+    public function get_google_credential($key) {
+        try {
+            // TODO: Implement real Google credential retrieval
+            $credentials = get_option('kseo_google_ads_credentials', array());
+            if (!is_array($credentials)) {
+                $credentials = array();
+            }
+            return isset($credentials[$key]) ? $credentials[$key] : '';
+        } catch (\Exception $e) {
+            error_log('KE SEO Booster: Error in get_google_credential - ' . $e->getMessage());
+            return '';
+        }
+    }
+
+    /**
+     * Render API keys table
+     * 
+     * @return string
+     */
+    public function render_api_keys_table() {
+        try {
+            // TODO: Implement real API keys table rendering
+            return '<p>API keys table - coming soon</p>';
+        } catch (\Exception $e) {
+            error_log('KE SEO Booster: Error in render_api_keys_table - ' . $e->getMessage());
+            return '<p>Error loading API keys table</p>';
+        }
+    }
+
+    /**
+     * Get modules list
+     * 
+     * @return array
+     */
+    public function modules() {
+        try {
+            // TODO: Implement real modules list retrieval
+            if (method_exists($this->service_loader, 'get_available_modules')) {
+                return $this->service_loader->get_available_modules();
+            }
+            return array();
+        } catch (\Exception $e) {
+            error_log('KE SEO Booster: Error in modules - ' . $e->getMessage());
+            return array();
+        }
+    }
+
+    /**
+     * Get loaded modules list
+     * 
+     * @return array
+     */
+    public function loaded_modules() {
+        try {
+            // TODO: Implement real loaded modules retrieval
+            if (method_exists($this->service_loader, 'get_loaded_modules')) {
+                return $this->service_loader->get_loaded_modules();
+            }
+            return array();
+        } catch (\Exception $e) {
+            error_log('KE SEO Booster: Error in loaded_modules - ' . $e->getMessage());
+            return array();
+        }
     }
 } 
