@@ -99,6 +99,9 @@ class Plugin {
         // Add Open Graph tags
         add_action('wp_head', array($this, 'output_og_tags'), 3);
 
+        // Add query vars for sitemap and robots
+        add_filter('query_vars', array($this, 'add_query_vars'));
+
         // Initialize cron/jobs
         \KSEO\SEO_Booster\Core\Jobs::init();
     }
@@ -131,6 +134,16 @@ class Plugin {
     private function init_cli() {
         // Register WP-CLI commands
         \WP_CLI::add_command('kseo', 'KSEO\\SEO_Booster\\CLI\\Commands');
+    }
+    
+    /**
+     * Add query vars for sitemap and robots
+     */
+    public function add_query_vars($vars) {
+        $vars[] = 'kseo_sitemap';
+        $vars[] = 'kseo_sitemap_type';
+        $vars[] = 'kseo_robots';
+        return $vars;
     }
     
     /**
@@ -573,7 +586,6 @@ class Plugin {
      */
     public function load_enabled_modules() {
         try {
-            // TODO: Implement real module loading logic
             if (method_exists($this->service_loader, 'get_loaded_modules')) {
                 return $this->service_loader->get_loaded_modules();
             }
@@ -582,6 +594,82 @@ class Plugin {
             error_log('KE SEO Booster: Error in load_enabled_modules - ' . $e->getMessage());
             return array();
         }
+    }
+    
+    /**
+     * Get optimized posts count
+     * 
+     * @return int
+     */
+    public function get_optimized_posts_count() {
+        global $wpdb;
+        $count = $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(*) FROM {$wpdb->postmeta} WHERE meta_key = %s",
+            '_kseo_title'
+        ));
+        return intval($count);
+    }
+    
+    /**
+     * Get total keywords count
+     * 
+     * @return int
+     */
+    public function get_total_keywords_count() {
+        global $wpdb;
+        $count = $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(*) FROM {$wpdb->postmeta} WHERE meta_key = %s AND meta_value != ''",
+            '_kseo_keywords'
+        ));
+        return intval($count);
+    }
+    
+    /**
+     * Get total posts count
+     * 
+     * @return int
+     */
+    public function get_total_posts_count() {
+        $post_types = get_option('kseo_post_types', array('post', 'page'));
+        if (!is_array($post_types)) {
+            $post_types = array('post', 'page');
+        }
+        
+        $count = 0;
+        foreach ($post_types as $post_type) {
+            $count += wp_count_posts($post_type)->publish;
+        }
+        return $count;
+    }
+    
+    /**
+     * Get schema enabled posts count
+     * 
+     * @return int
+     */
+    public function get_schema_enabled_posts_count() {
+        global $wpdb;
+        $count = $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(*) FROM {$wpdb->postmeta} WHERE meta_key = %s AND meta_value = %s",
+            '_kseo_enable_schema',
+            '1'
+        ));
+        return intval($count);
+    }
+    
+    /**
+     * Get social tags enabled posts count
+     * 
+     * @return int
+     */
+    public function get_social_tags_enabled_posts_count() {
+        global $wpdb;
+        $count = $wpdb->get_var($wpdb->prepare(
+            "SELECT COUNT(*) FROM {$wpdb->postmeta} WHERE meta_key = %s AND meta_value = %s",
+            '_kseo_enable_og_tags',
+            '1'
+        ));
+        return intval($count);
     }
 
     /**

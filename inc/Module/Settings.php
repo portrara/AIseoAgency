@@ -60,10 +60,13 @@ class Settings {
             array($this, 'api_section_callback'),
             'kseo_options'
         );
+        
         add_settings_section(
             'kseo_ai_section',
             __('AI & Integrations', 'kseo-seo-booster'),
-            function () { echo '<p>' . esc_html__('Manage third-party keys and runtime limits for AI modules.', 'kseo-seo-booster') . '</p>'; },
+            function () { 
+                echo '<p>' . esc_html__('Manage third-party keys and runtime limits for AI modules.', 'kseo-seo-booster') . '</p>'; 
+            },
             'kseo_options'
         );
         
@@ -207,125 +210,18 @@ class Settings {
      */
     private function render_modules_tab() {
         ?>
-        <h3><?php _e('Module Settings', 'kseo-seo-booster'); ?></h3>
-        <p><?php _e('Configure which SEO modules are enabled.', 'kseo-seo-booster'); ?></p>
-        
-        <table class="form-table">
-            <tr>
-                <th scope="row"><?php _e('Available Modules', 'kseo-seo-booster'); ?></th>
-                <td>
-                    <?php
-                    $modules = get_option('kseo_modules', array());
-                    if (!is_array($modules)) {
-                        $modules = array();
-                    }
-                    
-                    $available_modules = array(
-                        'meta_box' => __('SEO Meta Box', 'kseo-seo-booster'),
-                        'meta_output' => __('Meta Output', 'kseo-seo-booster'),
-                        'social_tags' => __('Social Tags', 'kseo-seo-booster'),
-                        'schema' => __('Schema Markup', 'kseo-seo-booster'),
-                        'sitemap' => __('XML Sitemap', 'kseo-seo-booster'),
-                        'keyword_suggest' => __('Keyword Suggestions', 'kseo-seo-booster'),
-                        'ai_generator' => __('AI Content Generator', 'kseo-seo-booster'),
-                        'bulk_audit' => __('Bulk Audit', 'kseo-seo-booster'),
-                        'internal_link' => __('Internal Linking', 'kseo-seo-booster'),
-                        'api' => __('API Integration', 'kseo-seo-booster')
-                    );
-                    
-                    foreach ($available_modules as $module_key => $module_name) {
-                        $checked = isset($modules[$module_key]) && $modules[$module_key] ? 'checked' : '';
-                        echo '<label><input type="checkbox" name="kseo_modules[' . esc_attr($module_key) . ']" value="1" ' . $checked . ' /> ' . esc_html($module_name) . '</label><br>';
-                    }
-                    ?>
-                </td>
-            </tr>
-        </table>
-        
-        <?php submit_button(); ?>
-        <?php
-    }
-
-    /**
-     * Render API settings tab
-     */
-    private function render_api_tab() {
-        ?>
-        <h3><?php _e('API Configuration', 'kseo-seo-booster'); ?></h3>
-        <p><?php _e('Configure external API integrations.', 'kseo-seo-booster'); ?></p>
-        
-        <table class="form-table">
-            <tr>
-                <th scope="row">
-                    <label for="kseo_openai_api_key"><?php _e('OpenAI API Key', 'kseo-seo-booster'); ?></label>
-                </th>
-                <td>
-                    <input type="password" id="kseo_openai_api_key" name="kseo_openai_api_key" 
-                           value="<?php echo esc_attr(get_option('kseo_openai_api_key')); ?>" class="regular-text" />
-                    <p class="description"><?php _e('Enter your OpenAI API key for AI content generation.', 'kseo-seo-booster'); ?></p>
-                </td>
-            </tr>
-        </table>
-        
-        <?php submit_button(); ?>
-        <?php
-    }
-
-    /**
-     * Render onboarding tab
-     */
-    private function render_onboarding_tab() {
-        ?>
-        <div class="kseo-onboarding">
-            <h3><?php _e('Welcome to KE SEO Booster Pro!', 'kseo-seo-booster'); ?></h3>
-            <p><?php _e('Let\'s get you started with a quick setup wizard.', 'kseo-seo-booster'); ?></p>
+        <form method="post" action="options.php">
+            <?php
+            settings_fields('kseo_options');
+            ?>
             
-            <div class="kseo-onboarding-steps">
-                <div class="kseo-step active" data-step="1">
-                    <h4><?php _e('Step 1: Post Types', 'kseo-seo-booster'); ?></h4>
-                    <p><?php _e('Select which post types should have SEO optimization enabled.', 'kseo-seo-booster'); ?></p>
-                    
-                    <div class="kseo-post-types-selection">
-                        <?php
-                        $post_types = get_post_types(array('public' => true), 'objects');
-                        $selected_types = get_option('kseo_post_types', array('post', 'page'));
-                        
-                        // Ensure selected_types is always an array
-                        if (!is_array($selected_types)) {
-                            $selected_types = array('post', 'page');
-                        }
-                        
-                        foreach ($post_types as $post_type) {
-                            $checked = in_array($post_type->name, $selected_types) ? 'checked' : '';
-                            echo '<label><input type="checkbox" name="kseo_post_types[]" value="' . esc_attr($post_type->name) . '" ' . $checked . ' /> ' . esc_html($post_type->label) . '</label><br>';
-                        }
-                        ?>
-                    </div>
-                </div>
-                
-                <div class="kseo-step" data-step="2">
-                    <h4><?php _e('Step 2: API Keys', 'kseo-seo-booster'); ?></h4>
-                    <p><?php _e('Enter your API keys for enhanced functionality.', 'kseo-seo-booster'); ?></p>
-                    
-                    <table class="form-table">
-                        <tr>
-                            <th scope="row">
-                                <label for="kseo_openai_api_key"><?php _e('OpenAI API Key', 'kseo-seo-booster'); ?></label>
-                            </th>
-                            <td>
-                                <input type="password" id="kseo_openai_api_key" name="kseo_openai_api_key" 
-                                       value="<?php echo esc_attr(get_option('kseo_openai_api_key')); ?>" class="regular-text" />
-                                <p class="description"><?php _e('Optional: For AI content generation features.', 'kseo-seo-booster'); ?></p>
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-                
-                <div class="kseo-step" data-step="3">
-                    <h4><?php _e('Step 3: Enable Modules', 'kseo-seo-booster'); ?></h4>
-                    <p><?php _e('Choose which SEO modules to enable.', 'kseo-seo-booster'); ?></p>
-                    
-                    <div class="kseo-modules-selection">
+            <h3><?php _e('Module Settings', 'kseo-seo-booster'); ?></h3>
+            <p><?php _e('Configure which SEO modules are enabled.', 'kseo-seo-booster'); ?></p>
+            
+            <table class="form-table">
+                <tr>
+                    <th scope="row"><?php _e('Available Modules', 'kseo-seo-booster'); ?></th>
+                    <td>
                         <?php
                         $modules = get_option('kseo_modules', array());
                         if (!is_array($modules)) {
@@ -337,7 +233,12 @@ class Settings {
                             'meta_output' => __('Meta Output', 'kseo-seo-booster'),
                             'social_tags' => __('Social Tags', 'kseo-seo-booster'),
                             'schema' => __('Schema Markup', 'kseo-seo-booster'),
-                            'sitemap' => __('XML Sitemap', 'kseo-seo-booster')
+                            'sitemap' => __('XML Sitemap', 'kseo-seo-booster'),
+                            'keyword_suggest' => __('Keyword Suggestions', 'kseo-seo-booster'),
+                            'ai_generator' => __('AI Content Generator', 'kseo-seo-booster'),
+                            'bulk_audit' => __('Bulk Audit', 'kseo-seo-booster'),
+                            'internal_link' => __('Internal Linking', 'kseo-seo-booster'),
+                            'api' => __('API Integration', 'kseo-seo-booster')
                         );
                         
                         foreach ($available_modules as $module_key => $module_name) {
@@ -345,156 +246,8 @@ class Settings {
                             echo '<label><input type="checkbox" name="kseo_modules[' . esc_attr($module_key) . ']" value="1" ' . $checked . ' /> ' . esc_html($module_name) . '</label><br>';
                         }
                         ?>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="kseo-onboarding-actions">
-                <button type="button" class="button button-secondary" id="kseo-prev-step" style="display: none;"><?php _e('Previous', 'kseo-seo-booster'); ?></button>
-                <button type="button" class="button button-primary" id="kseo-next-step"><?php _e('Next', 'kseo-seo-booster'); ?></button>
-                <button type="button" class="button button-primary" id="kseo-complete-setup" style="display: none;"><?php _e('Complete Setup', 'kseo-seo-booster'); ?></button>
-            </div>
-        </div>
-        
-        <script>
-        jQuery(document).ready(function($) {
-            var currentStep = 1;
-            var totalSteps = 3;
-            
-            function showStep(step) {
-                $('.kseo-step').removeClass('active');
-                $('.kseo-step[data-step="' + step + '"]').addClass('active');
-                
-                if (step === 1) {
-                    $('#kseo-prev-step').hide();
-                } else {
-                    $('#kseo-prev-step').show();
-                }
-                
-                if (step === totalSteps) {
-                    $('#kseo-next-step').hide();
-                    $('#kseo-complete-setup').show();
-                } else {
-                    $('#kseo-next-step').show();
-                    $('#kseo-complete-setup').hide();
-                }
-            }
-            
-            $('#kseo-next-step').click(function() {
-                if (currentStep < totalSteps) {
-                    currentStep++;
-                    showStep(currentStep);
-                }
-            });
-            
-            $('#kseo-prev-step').click(function() {
-                if (currentStep > 1) {
-                    currentStep--;
-                    showStep(currentStep);
-                }
-            });
-            
-            $('#kseo-complete-setup').click(function() {
-                var formData = $('#kseo-onboarding-form').serialize();
-                
-                $.ajax({
-                    url: ajaxurl,
-                    type: 'POST',
-                    data: {
-                        action: 'kseo_complete_onboarding',
-                        nonce: '<?php echo wp_create_nonce('kseo_nonce'); ?>',
-                        formData: formData
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            alert('Setup completed successfully!');
-                            location.reload();
-                        } else {
-                            alert('Setup failed: ' + response.data);
-                        }
-                    },
-                    error: function() {
-                        alert('Setup failed. Please try again.');
-                    }
-                });
-            });
-        });
-        </script>
-        <?php
-    }
-
-    /**
-     * Get Google credential value
-     */
-    private function get_google_credential($key) {
-        $credentials = get_option('kseo_google_ads_credentials', array());
-        if (!is_array($credentials)) {
-            $credentials = array();
-        }
-        return isset($credentials[$key]) ? $credentials[$key] : '';
-    }
-
-    /**
-     * Render API keys table
-     */
-    private function render_api_keys_table() {
-        ?>
-        <table class="form-table">
-            <tr>
-                <th scope="row"><?php _e('Google Ads API Credentials', 'kseo-seo-booster'); ?></th>
-                <td>
-                    <p><?php _e('Configure Google Ads API for keyword suggestions.', 'kseo-seo-booster'); ?></p>
-                    
-                    <table class="form-table">
-                        <tr>
-                            <th scope="row">
-                                <label for="kseo_google_customer_id"><?php _e('Customer ID', 'kseo-seo-booster'); ?></label>
-                            </th>
-                            <td>
-                                <input type="text" id="kseo_google_customer_id" name="kseo_google_ads_credentials[customer_id]" 
-                                       value="<?php echo esc_attr($this->get_google_credential('customer_id')); ?>" class="regular-text" />
-                            </td>
-                        </tr>
-                        
-                        <tr>
-                            <th scope="row">
-                                <label for="kseo_google_developer_token"><?php _e('Developer Token', 'kseo-seo-booster'); ?></label>
-                            </th>
-                            <td>
-                                <input type="password" id="kseo_google_developer_token" name="kseo_google_ads_credentials[developer_token]" 
-                                       value="<?php echo esc_attr($this->get_google_credential('developer_token')); ?>" class="regular-text" />
-                            </td>
-                            <td>
-                                <input type="password" id="kseo_google_developer_token" name="kseo_google_ads_credentials[developer_token]" 
-                                       value="<?php echo esc_attr($this->get_google_credential('developer_token')); ?>" class="regular-text" />
-                            </td>
-                        </tr>
-                        
-                        <tr>
-                            <th scope="row">
-                                <label for="kseo_google_client_id"><?php _e('Client ID', 'kseo-seo-booster'); ?></label>
-                            </th>
-                            <td>
-                                <input type="text" id="kseo_google_client_id" name="kseo_google_ads_credentials[client_id]" 
-                                       value="<?php echo esc_attr($this->get_google_credential('client_id')); ?>" class="regular-text" />
-                            </td>
-                        </tr>
-                        
-                        <tr>
-                            <th scope="row">
-                                <label for="kseo_google_client_secret"><?php _e('Client Secret', 'kseo-seo-booster'); ?></label>
-                            </th>
-                            <td>
-                                <input type="password" id="kseo_google_client_secret" name="kseo_google_ads_credentials[client_secret]" 
-                                       value="<?php echo esc_attr($this->get_google_credential('client_secret')); ?>" class="regular-text" />
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-        </table>
-        <?php
-    }
+                    </td>
+                </tr>
             </table>
             
             <?php submit_button(); ?>
@@ -503,71 +256,87 @@ class Settings {
     }
 
     /**
-     * Render modules settings tab
-     */
-    private function render_modules_tab() {
-        ?>
-        <h3><?php _e('Module Settings', 'kseo-seo-booster'); ?></h3>
-        <p><?php _e('Configure which SEO modules are enabled.', 'kseo-seo-booster'); ?></p>
-        
-        <table class="form-table">
-            <tr>
-                <th scope="row"><?php _e('Available Modules', 'kseo-seo-booster'); ?></th>
-                <td>
-                    <?php
-                    $modules = get_option('kseo_modules', array());
-                    if (!is_array($modules)) {
-                        $modules = array();
-                    }
-                    
-                    $available_modules = array(
-                        'meta_box' => __('SEO Meta Box', 'kseo-seo-booster'),
-                        'meta_output' => __('Meta Output', 'kseo-seo-booster'),
-                        'social_tags' => __('Social Tags', 'kseo-seo-booster'),
-                        'schema' => __('Schema Markup', 'kseo-seo-booster'),
-                        'sitemap' => __('XML Sitemap', 'kseo-seo-booster'),
-                        'keyword_suggest' => __('Keyword Suggestions', 'kseo-seo-booster'),
-                        'ai_generator' => __('AI Content Generator', 'kseo-seo-booster'),
-                        'bulk_audit' => __('Bulk Audit', 'kseo-seo-booster'),
-                        'internal_link' => __('Internal Linking', 'kseo-seo-booster'),
-                        'api' => __('API Integration', 'kseo-seo-booster')
-                    );
-                    
-                    foreach ($available_modules as $module_key => $module_name) {
-                        $checked = isset($modules[$module_key]) && $modules[$module_key] ? 'checked' : '';
-                        echo '<label><input type="checkbox" name="kseo_modules[' . esc_attr($module_key) . ']" value="1" ' . $checked . ' /> ' . esc_html($module_name) . '</label><br>';
-                    }
-                    ?>
-                </td>
-            </tr>
-        </table>
-        
-        <?php submit_button(); ?>
-        <?php
-    }
-
-    /**
      * Render API settings tab
      */
     private function render_api_tab() {
         ?>
-        <h3><?php _e('API Configuration', 'kseo-seo-booster'); ?></h3>
-        <p><?php _e('Configure external API integrations.', 'kseo-seo-booster'); ?></p>
+        <form method="post" action="options.php">
+            <?php
+            settings_fields('kseo_options');
+            ?>
+            
+            <h3><?php _e('API Configuration', 'kseo-seo-booster'); ?></h3>
+            <p><?php _e('Configure external API integrations.', 'kseo-seo-booster'); ?></p>
+            
+            <table class="form-table">
+                <tr>
+                    <th scope="row">
+                        <label for="kseo_openai_api_key"><?php _e('OpenAI API Key', 'kseo-seo-booster'); ?></label>
+                    </th>
+                    <td>
+                        <input type="password" id="kseo_openai_api_key" name="kseo_openai_api_key" 
+                               value="<?php echo esc_attr(get_option('kseo_openai_api_key')); ?>" class="regular-text" />
+                        <p class="description"><?php _e('Enter your OpenAI API key for AI content generation.', 'kseo-seo-booster'); ?></p>
+                    </td>
+                </tr>
+            </table>
+            
+            <?php $this->render_google_ads_credentials(); ?>
+            
+            <?php submit_button(); ?>
+        </form>
+        <?php
+    }
+
+    /**
+     * Render Google Ads API credentials section
+     */
+    private function render_google_ads_credentials() {
+        ?>
+        <h3><?php _e('Google Ads API Credentials', 'kseo-seo-booster'); ?></h3>
+        <p><?php _e('Configure Google Ads API for keyword suggestions.', 'kseo-seo-booster'); ?></p>
         
         <table class="form-table">
             <tr>
                 <th scope="row">
-                    <label for="kseo_openai_api_key"><?php _e('OpenAI API Key', 'kseo-seo-booster'); ?></label>
+                    <label for="kseo_google_customer_id"><?php _e('Customer ID', 'kseo-seo-booster'); ?></label>
                 </th>
                 <td>
-                    <input type="password" id="kseo_openai_api_key" name="kseo_openai_api_key" 
-                           value="<?php echo esc_attr(get_option('kseo_openai_api_key')); ?>" class="regular-text" />
-                    <p class="description"><?php _e('Enter your OpenAI API key for AI content generation.', 'kseo-seo-booster'); ?></p>
+                    <input type="text" id="kseo_google_customer_id" name="kseo_google_ads_credentials[customer_id]" 
+                           value="<?php echo esc_attr($this->get_google_credential('customer_id')); ?>" class="regular-text" />
+                </td>
+            </tr>
+            
+            <tr>
+                <th scope="row">
+                    <label for="kseo_google_developer_token"><?php _e('Developer Token', 'kseo-seo-booster'); ?></label>
+                </th>
+                <td>
+                    <input type="password" id="kseo_google_developer_token" name="kseo_google_ads_credentials[developer_token]" 
+                           value="<?php echo esc_attr($this->get_google_credential('developer_token')); ?>" class="regular-text" />
+                </td>
+            </tr>
+            
+            <tr>
+                <th scope="row">
+                    <label for="kseo_google_client_id"><?php _e('Client ID', 'kseo-seo-booster'); ?></label>
+                </th>
+                <td>
+                    <input type="text" id="kseo_google_client_id" name="kseo_google_ads_credentials[client_id]" 
+                           value="<?php echo esc_attr($this->get_google_credential('client_id')); ?>" class="regular-text" />
+                </td>
+            </tr>
+            
+            <tr>
+                <th scope="row">
+                    <label for="kseo_google_client_secret"><?php _e('Client Secret', 'kseo-seo-booster'); ?></label>
+                </th>
+                <td>
+                    <input type="password" id="kseo_google_client_secret" name="kseo_google_ads_credentials[client_secret]" 
+                           value="<?php echo esc_attr($this->get_google_credential('client_secret')); ?>" class="regular-text" />
                 </td>
             </tr>
         </table>
-        
-        <?php submit_button(); ?>
         <?php
     }
 
@@ -580,80 +349,84 @@ class Settings {
             <h3><?php _e('Welcome to KE SEO Booster Pro!', 'kseo-seo-booster'); ?></h3>
             <p><?php _e('Let\'s get you started with a quick setup wizard.', 'kseo-seo-booster'); ?></p>
             
-            <div class="kseo-onboarding-steps">
-                <div class="kseo-step active" data-step="1">
-                    <h4><?php _e('Step 1: Post Types', 'kseo-seo-booster'); ?></h4>
-                    <p><?php _e('Select which post types should have SEO optimization enabled.', 'kseo-seo-booster'); ?></p>
+            <form id="kseo-onboarding-form" method="post" action="options.php">
+                <?php settings_fields('kseo_options'); ?>
+                
+                <div class="kseo-onboarding-steps">
+                    <div class="kseo-step active" data-step="1">
+                        <h4><?php _e('Step 1: Post Types', 'kseo-seo-booster'); ?></h4>
+                        <p><?php _e('Select which post types should have SEO optimization enabled.', 'kseo-seo-booster'); ?></p>
+                        
+                        <div class="kseo-post-types-selection">
+                            <?php
+                            $post_types = get_post_types(array('public' => true), 'objects');
+                            $selected_types = get_option('kseo_post_types', array('post', 'page'));
+                            
+                            // Ensure selected_types is always an array
+                            if (!is_array($selected_types)) {
+                                $selected_types = array('post', 'page');
+                            }
+                            
+                            foreach ($post_types as $post_type) {
+                                $checked = in_array($post_type->name, $selected_types) ? 'checked' : '';
+                                echo '<label><input type="checkbox" name="kseo_post_types[]" value="' . esc_attr($post_type->name) . '" ' . $checked . ' /> ' . esc_html($post_type->label) . '</label><br>';
+                            }
+                            ?>
+                        </div>
+                    </div>
                     
-                    <div class="kseo-post-types-selection">
-                        <?php
-                        $post_types = get_post_types(array('public' => true), 'objects');
-                        $selected_types = get_option('kseo_post_types', array('post', 'page'));
+                    <div class="kseo-step" data-step="2">
+                        <h4><?php _e('Step 2: API Keys', 'kseo-seo-booster'); ?></h4>
+                        <p><?php _e('Enter your API keys for enhanced functionality.', 'kseo-seo-booster'); ?></p>
                         
-                        // Ensure selected_types is always an array
-                        if (!is_array($selected_types)) {
-                            $selected_types = array('post', 'page');
-                        }
+                        <table class="form-table">
+                            <tr>
+                                <th scope="row">
+                                    <label for="kseo_openai_api_key"><?php _e('OpenAI API Key', 'kseo-seo-booster'); ?></label>
+                                </th>
+                                <td>
+                                    <input type="password" id="kseo_openai_api_key" name="kseo_openai_api_key" 
+                                           value="<?php echo esc_attr(get_option('kseo_openai_api_key')); ?>" class="regular-text" />
+                                    <p class="description"><?php _e('Optional: For AI content generation features.', 'kseo-seo-booster'); ?></p>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    
+                    <div class="kseo-step" data-step="3">
+                        <h4><?php _e('Step 3: Enable Modules', 'kseo-seo-booster'); ?></h4>
+                        <p><?php _e('Choose which SEO modules to enable.', 'kseo-seo-booster'); ?></p>
                         
-                        foreach ($post_types as $post_type) {
-                            $checked = in_array($post_type->name, $selected_types) ? 'checked' : '';
-                            echo '<label><input type="checkbox" name="kseo_post_types[]" value="' . esc_attr($post_type->name) . '" ' . $checked . ' /> ' . esc_html($post_type->label) . '</label><br>';
-                        }
-                        ?>
+                        <div class="kseo-modules-selection">
+                            <?php
+                            $modules = get_option('kseo_modules', array());
+                            if (!is_array($modules)) {
+                                $modules = array();
+                            }
+                            
+                            $available_modules = array(
+                                'meta_box' => __('SEO Meta Box', 'kseo-seo-booster'),
+                                'meta_output' => __('Meta Output', 'kseo-seo-booster'),
+                                'social_tags' => __('Social Tags', 'kseo-seo-booster'),
+                                'schema' => __('Schema Markup', 'kseo-seo-booster'),
+                                'sitemap' => __('XML Sitemap', 'kseo-seo-booster')
+                            );
+                            
+                            foreach ($available_modules as $module_key => $module_name) {
+                                $checked = isset($modules[$module_key]) && $modules[$module_key] ? 'checked' : '';
+                                echo '<label><input type="checkbox" name="kseo_modules[' . esc_attr($module_key) . ']" value="1" ' . $checked . ' /> ' . esc_html($module_name) . '</label><br>';
+                            }
+                            ?>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="kseo-step" data-step="2">
-                    <h4><?php _e('Step 2: API Keys', 'kseo-seo-booster'); ?></h4>
-                    <p><?php _e('Enter your API keys for enhanced functionality.', 'kseo-seo-booster'); ?></p>
-                    
-                    <table class="form-table">
-                        <tr>
-                            <th scope="row">
-                                <label for="kseo_openai_api_key"><?php _e('OpenAI API Key', 'kseo-seo-booster'); ?></label>
-                            </th>
-                            <td>
-                                <input type="password" id="kseo_openai_api_key" name="kseo_openai_api_key" 
-                                       value="<?php echo esc_attr(get_option('kseo_openai_api_key')); ?>" class="regular-text" />
-                                <p class="description"><?php _e('Optional: For AI content generation features.', 'kseo-seo-booster'); ?></p>
-                            </td>
-                        </tr>
-                    </table>
+                <div class="kseo-onboarding-actions">
+                    <button type="button" class="button button-secondary" id="kseo-prev-step" style="display: none;"><?php _e('Previous', 'kseo-seo-booster'); ?></button>
+                    <button type="button" class="button button-primary" id="kseo-next-step"><?php _e('Next', 'kseo-seo-booster'); ?></button>
+                    <button type="button" class="button button-primary" id="kseo-complete-setup" style="display: none;"><?php _e('Complete Setup', 'kseo-seo-booster'); ?></button>
                 </div>
-                
-                <div class="kseo-step" data-step="3">
-                    <h4><?php _e('Step 3: Enable Modules', 'kseo-seo-booster'); ?></h4>
-                    <p><?php _e('Choose which SEO modules to enable.', 'kseo-seo-booster'); ?></p>
-                    
-                    <div class="kseo-modules-selection">
-                        <?php
-                        $modules = get_option('kseo_modules', array());
-                        if (!is_array($modules)) {
-                            $modules = array();
-                        }
-                        
-                        $available_modules = array(
-                            'meta_box' => __('SEO Meta Box', 'kseo-seo-booster'),
-                            'meta_output' => __('Meta Output', 'kseo-seo-booster'),
-                            'social_tags' => __('Social Tags', 'kseo-seo-booster'),
-                            'schema' => __('Schema Markup', 'kseo-seo-booster'),
-                            'sitemap' => __('XML Sitemap', 'kseo-seo-booster')
-                        );
-                        
-                        foreach ($available_modules as $module_key => $module_name) {
-                            $checked = isset($modules[$module_key]) && $modules[$module_key] ? 'checked' : '';
-                            echo '<label><input type="checkbox" name="kseo_modules[' . esc_attr($module_key) . ']" value="1" ' . $checked . ' /> ' . esc_html($module_name) . '</label><br>';
-                        }
-                        ?>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="kseo-onboarding-actions">
-                <button type="button" class="button button-secondary" id="kseo-prev-step" style="display: none;"><?php _e('Previous', 'kseo-seo-booster'); ?></button>
-                <button type="button" class="button button-primary" id="kseo-next-step"><?php _e('Next', 'kseo-seo-booster'); ?></button>
-                <button type="button" class="button button-primary" id="kseo-complete-setup" style="display: none;"><?php _e('Complete Setup', 'kseo-seo-booster'); ?></button>
-            </div>
+            </form>
         </div>
         
         <script>
@@ -733,86 +506,25 @@ class Settings {
         }
         return isset($credentials[$key]) ? $credentials[$key] : '';
     }
-
-    /**
-     * Render API keys table
-     */
-    private function render_api_keys_table() {
-        ?>
-        <table class="form-table">
-            <tr>
-                <th scope="row"><?php _e('Google Ads API Credentials', 'kseo-seo-booster'); ?></th>
-                <td>
-                    <p><?php _e('Configure Google Ads API for keyword suggestions.', 'kseo-seo-booster'); ?></p>
-                    
-                    <table class="form-table">
-                        <tr>
-                            <th scope="row">
-                                <label for="kseo_google_customer_id"><?php _e('Customer ID', 'kseo-seo-booster'); ?></label>
-                            </th>
-                            <td>
-                                <input type="text" id="kseo_google_customer_id" name="kseo_google_ads_credentials[customer_id]" 
-                                       value="<?php echo esc_attr($this->get_google_credential('customer_id')); ?>" class="regular-text" />
-                            </td>
-                        </tr>
-                        
-                        <tr>
-                            <th scope="row">
-                                <label for="kseo_google_developer_token"><?php _e('Developer Token', 'kseo-seo-booster'); ?></label>
-                            </th>
-                            <td>
-                                <input type="password" id="kseo_google_developer_token" name="kseo_google_ads_credentials[developer_token]" 
-                                       value="<?php echo esc_attr($this->get_google_credential('developer_token')); ?>" class="regular-text" />
-                            </td>
-                        </tr>
-                        
-                        <tr>
-                            <th scope="row">
-                                <label for="kseo_google_client_id"><?php _e('Client ID', 'kseo-seo-booster'); ?></label>
-                            </th>
-                            <td>
-                                <input type="text" id="kseo_google_client_id" name="kseo_google_ads_credentials[client_id]" 
-                                       value="<?php echo esc_attr($this->get_google_credential('client_id')); ?>" class="regular-text" />
-                            </td>
-                        </tr>
-                        
-                        <tr>
-                            <th scope="row">
-                                <label for="kseo_google_client_secret"><?php _e('Client Secret', 'kseo-seo-booster'); ?></label>
-                            </th>
-                            <td>
-                                <input type="password" id="kseo_google_client_secret" name="kseo_google_ads_credentials[client_secret]" 
-                                       value="<?php echo esc_attr($this->get_google_credential('client_secret')); ?>" class="regular-text" />
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-        </table>
-        <?php
-    }
     
     /**
-     * Render general settings tab
+     * Section callbacks
      */
     public function modules_section_callback() {
         echo '<p>' . __('Configure which modules are enabled. Some modules require API configuration.', 'kseo-seo-booster') . '</p>';
     }
     
-    /**
-     * Render API settings tab
-     */
     public function api_section_callback() {
         echo '<p>' . __('Configure API keys for advanced features like AI content generation and keyword suggestions.', 'kseo-seo-booster') . '</p>';
     }
     
-    /**
-     * Render general settings tab
-     */
     public function general_section_callback() {
         echo '<p>' . __('Configure general settings for the SEO plugin.', 'kseo-seo-booster') . '</p>';
     }
 
+    /**
+     * Sanitization methods
+     */
     public function sanitize_feature_flags($value) {
         $out = array();
         $in = is_array($value) ? $value : array();
@@ -869,7 +581,9 @@ class Settings {
         return $out;
     }
 
-    /** Inline process: test alert button */
+    /**
+     * Inline process: test alert button
+     */
     private function maybe_send_test_alert() {
         if (isset($_POST['kseo_send_test_alert']) && check_admin_referer('kseo_security_nonce', 'kseo_security_nonce')) {
             \KSEO\SEO_Booster\Core\Alerts::send('test', array('message' => 'This is a test alert from KSEO'));

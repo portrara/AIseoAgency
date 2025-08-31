@@ -17,6 +17,40 @@ class Installer {
      * Run database migrations using dbDelta
      */
     public static function install(): void {
+        // Add custom capabilities
+        self::add_capabilities();
+        
+        // Create database tables
+        self::create_tables();
+        
+        // Set default options
+        self::set_default_options();
+    }
+    
+    /**
+     * Add custom capabilities
+     */
+    private static function add_capabilities(): void {
+        $admin_role = get_role('administrator');
+        if ($admin_role) {
+            $capabilities = array(
+                'kseo_optimize_content',
+                'kseo_manage_settings',
+                'kseo_run_audits',
+                'kseo_view_reports',
+                'kseo_export_data'
+            );
+            
+            foreach ($capabilities as $cap) {
+                $admin_role->add_cap($cap);
+            }
+        }
+    }
+    
+    /**
+     * Create database tables
+     */
+    private static function create_tables(): void {
         global $wpdb;
 
         $charset_collate = $wpdb->get_charset_collate();
@@ -207,6 +241,39 @@ class Installer {
 
         foreach ($sql2 as $statement) {
             dbDelta($statement);
+        }
+    }
+    
+    /**
+     * Set default options
+     */
+    private static function set_default_options(): void {
+        $default_options = array(
+            'kseo_modules' => array(
+                'meta_box' => true,
+                'meta_output' => true,
+                'social_tags' => true,
+                'schema' => true,
+                'sitemap' => true,
+                'robots' => true,
+                'keyword_suggest' => false,
+                'ai_generator' => false,
+                'bulk_audit' => false,
+                'internal_link' => false,
+                'api' => true
+            ),
+            'kseo_post_types' => array('post', 'page'),
+            'kseo_auto_generate' => true,
+            'kseo_enable_schema' => true,
+            'kseo_enable_og_tags' => true,
+            'kseo_version' => KSEO_VERSION,
+            'kseo_onboarding_completed' => false
+        );
+
+        foreach ($default_options as $option => $value) {
+            if (get_option($option) === false) {
+                add_option($option, $value);
+            }
         }
     }
 }
